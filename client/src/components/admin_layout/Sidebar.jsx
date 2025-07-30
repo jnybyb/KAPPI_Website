@@ -86,7 +86,7 @@ const Sidebar = ({ active, setActive }) => {
     <aside
       style={{
         width: '245px',
-        background: '#F9FAFB',
+        background: 'var(--white)',
         color: 'var(--dark-brown)',
         height: '100vh',
         boxSizing: 'border-box',
@@ -96,8 +96,8 @@ const Sidebar = ({ active, setActive }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        borderRight: '1px solid var(--light-gray)',
-        boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)', 
+        borderRight: '1px solid var(--tan)',
+        //boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)', 
         zIndex: 2,
       }}
     >

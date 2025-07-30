@@ -115,11 +115,11 @@
   --olive-green: #708238;
   --mint-green: #c6f0d8;
   --dark-brown: #4B2E2B;
-  --deep-brown: #3E2723;
-  --tan: #A1866F;
+  --deep-brown: hsl(9, 28%, 19%);
+  --tan: rgb(161, 134, 111);
   --beige: #F5F5DC;
   --ivory: #FFFFF0;
-  --light-gray: #fafafa;
+  --light-gray: #d7d7d7;
   --accent-orange: #F4A261;
   --white: #FFFFFF;
   --black: #000000;

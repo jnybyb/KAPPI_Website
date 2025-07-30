@@ -20,7 +20,7 @@ const Header = () => (
       left: 0,
       width: '100%',
       boxSizing: 'border-box',
-      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.10)', 
+      boxShadow: '0 4px 7px rgba(161, 134, 111, 0.30)', 
       zIndex: 10, 
     }}
   >

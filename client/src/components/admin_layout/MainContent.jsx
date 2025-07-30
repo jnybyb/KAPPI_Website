@@ -5,7 +5,7 @@ const MainContent = ({ children }) => (
     style={{
       flex: 1,
       minWidth: 0, // allow to shrink in flex
-      background: '#FFFFFF',
+      background: '#F9FAFB',
       padding: '2rem',
       fontFamily: 'var(--font-main)',
       minHeight: '95%', // fill flex container
