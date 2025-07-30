@@ -1,0 +1,78 @@
+This is a Monitoring Website for the Coffee Farm in Taocanga, Manay, 
+Davao Oriental.
+
+
+GOAL - "to create a website that has a reusable, clean, organize, and maintainable code"
+
+Color Palette
+#228B22
+#708238
+#a8d5ba
+
+#4B2E2B
+#3E2723
+#A1866F
+
+#F5F5DC
+#FFFFF0
+
+#D9D5C8
+#F4A261
+#87CEEB
+
+
+Fonts
+Header: Cormorant Garamond
+Body: Inter or Work Sans
+Admin: Montserrat
+
+
+What should the Website contain?
+
+1. Interactive Farm Map
+    - pin location of the farm 
+    - Can be filtered by:
+        * Location of plants were it commonly die.
+        * 
+
+2. Timeline View
+    - Monthly tracking of dead and alive plant
+    - It can be filter by year, month, week.
+    - Either Bar Chart or Line Graph
+    
+3. Data Dashboard
+    - A summary page that includes:
+        * Total seed 
+        * Total beneficieries
+        * Survival Rate
+        * Farmer Ranking with sucessful crops
+
+4. Upload and Manage Data
+    - clean and arrange data
+
+
+
+
+
+
+
+Here are the technologies that were going to be use.
+
+1. Frontend
+    * React + Vite
+        = Javascript - Programming Language
+        = Leaflelts - Interactive Maps and Markers
+        = Chart.js or Rechart 
+        = Tailwind CSS - Responsive Styling
+        = axios - API Calls
+
+2. Backend
+    * Node.js + Express.js
+
+3. Database
+    * MongoDB Atlas
+
+4. Authentication
+    * Firebase Auth
+        - LOGIN/SIGNUP
+
