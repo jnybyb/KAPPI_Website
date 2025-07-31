@@ -96,9 +96,9 @@ const Sidebar = ({ active, setActive }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        borderRight: '1px solid var(--tan)',
+        //borderRight: '1px solid var(--tan)',
         //boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)', 
-        zIndex: 2,
+        //zIndex: 1,
       }}
     >
       <nav style={{ width: '100%', padding: '0 0.5rem' }}>
