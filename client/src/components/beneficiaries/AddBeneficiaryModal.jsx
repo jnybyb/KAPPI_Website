@@ -1,4 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
+
+// Reusable input field component - moved outside to prevent re-creation
+const InputField = memo(({ 
+  name, 
+  label, 
+  value, 
+  onChange, 
+  placeholder, 
+  required = false, 
+  error 
+}) => (
+  <div>
+    <label style={{
+      display: 'block',
+      marginBottom: '0.1rem',
+      fontWeight: '500',
+      color: 'var(--black)',
+      fontSize: '15px'
+    }}>
+      {label} {required && '*'}
+    </label>
+    <input
+      type="text"
+      name={name}
+      value={value}
+      onChange={onChange}
+      style={{
+        width: '100%',
+        padding: '9px 9px',
+        border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
+        borderRadius: '4px',
+        fontSize: '14px',
+        boxSizing: 'border-box'
+      }}
+      placeholder={placeholder}
+      className="modal-input-field"
+    />
+    {error && (
+      <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span>
+    )}
+  </div>
+));
+
+// Reusable select field component - moved outside to prevent re-creation
+const SelectField = memo(({ 
+  name, 
+  label, 
+  value, 
+  onChange, 
+  options, 
+  required = false, 
+  error 
+}) => (
+  <div>
+    <label style={{
+      display: 'block',
+      marginBottom: '0.1rem',
+      fontWeight: '500',
+      color: 'var(--black)',
+      fontSize: '15px'
+    }}>
+      {label} {required && '*'}
+    </label>
+    <div style={{ position: 'relative' }}>
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        style={{
+          width: '100%',
+          padding: '9px 32px 9px 9px',
+          border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
+          borderRadius: '4px',
+          fontSize: '14px',
+          boxSizing: 'border-box',
+          color: value ? 'var(--black)' : '#adb5bd',
+          backgroundColor: 'white',
+          maxHeight: '44px',
+          overflowY: 'auto',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          appearance: 'none'
+        }}
+        className="custom-select-dropdown"
+      >
+        <option value="" disabled style={{ color: '#adb5bd' }}>Select {label.toLowerCase()}</option>
+        {options.map(option => (
+          <option key={option.value || option} value={option.value || option} style={{ color: 'var(--black)' }}>
+            {option.label || option}
+          </option>
+        ))}
+      </select>
+      {/* Custom arrow icon */}
+      <span style={{
+        position: 'absolute',
+        right: '10px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        pointerEvents: 'none',
+        fontSize: '18px',
+        color: '#adb5bd'
+      }}>
+        ▼
+      </span>
+    </div>
+    {error && (
+      <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span>
+    )}
+  </div>
+));
 
 const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -23,116 +133,6 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   useEffect(() => {
     generateBeneficiaryId();
   }, []);
-
-  // Reusable input field component
-  const InputField = ({ 
-    name, 
-    label, 
-    value, 
-    onChange, 
-    placeholder, 
-    required = false, 
-    error 
-  }) => (
-    <div>
-      <label style={{
-        display: 'block',
-        marginBottom: '0.1rem',
-        fontWeight: '500',
-        color: 'var(--black)',
-        fontSize: '15px' // was 13px
-      }}>
-        {label} {required && '*'}
-      </label>
-      <input
-        type="text"
-        name={name}
-        value={value}
-        onChange={onChange}
-        style={{
-          width: '100%',
-          padding: '9px 9px', // slightly larger
-          border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-          borderRadius: '4px',
-          fontSize: '14px', // was 12px
-          boxSizing: 'border-box',
-          '::placeholder': { color: '#adb5bd' }
-        }}
-        placeholder={placeholder}
-      />
-      {error && (
-        <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span> // was 11px
-      )}
-    </div>
-  );
-
-  // Reusable select field component
-  const SelectField = ({ 
-    name, 
-    label, 
-    value, 
-    onChange, 
-    options, 
-    required = false, 
-    error 
-  }) => (
-    <div>
-      <label style={{
-        display: 'block',
-        marginBottom: '0.1rem',
-        fontWeight: '500',
-        color: 'var(--black)',
-        fontSize: '15px' // was 13px
-      }}>
-        {label} {required && '*'}
-      </label>
-      <div style={{ position: 'relative' }}>
-        <select
-          name={name}
-          value={value}
-          onChange={onChange}
-          style={{
-            width: '100%',
-            padding: '9px 32px 9px 9px', // add right padding for arrow
-            border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-            borderRadius: '4px',
-            fontSize: '14px',
-            boxSizing: 'border-box',
-            color: value ? 'var(--black)' : '#adb5bd',
-            backgroundColor: 'white',
-            maxHeight: '44px',
-            overflowY: 'auto',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-            appearance: 'none'
-          }}
-          className="custom-select-dropdown"
-        >
-          <option value="" disabled style={{ color: '#adb5bd' }}>Select {label.toLowerCase()}</option>
-          {options.map(option => (
-            <option key={option.value || option} value={option.value || option} style={{ color: 'var(--black)' }}>
-              {option.label || option}
-            </option>
-          ))}
-        </select>
-        {/* Custom arrow icon */}
-        <span style={{
-          position: 'absolute',
-          right: '10px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          pointerEvents: 'none',
-          fontSize: '18px',
-          color: '#adb5bd'
-        }}>
-          ▼
-        </span>
-      </div>
-      {error && (
-        <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span> // was 11px
-      )}
-    </div>
-  );
 
   // Update Beneficiary ID generator: two letters, two numbers (e.g., AB12)
   const generateBeneficiaryId = () => {
@@ -288,14 +288,19 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
       
       const newBeneficiary = {
         beneficiaryId,
-        picture: formData.picture ? URL.createObjectURL(formData.picture) : '👤',
-        name: fullName,
-        address: fullAddress,
+        firstName: formData.firstName,
+        middleName: formData.middleName,
+        lastName: formData.lastName,
+        purok: formData.purok,
+        barangay: formData.barangay,
+        municipality: formData.municipality,
+        province: formData.province,
         gender: formData.gender,
-        bDate: formattedBirthDate,
+        birthDate: formData.birthDate,
+        maritalStatus: formData.maritalStatus,
+        cellphone: formData.cellphone,
         age: age,
-        status: formData.maritalStatus,
-        cellphone: formData.cellphone
+        picture: formData.picture
       };
       
       onSubmit(newBeneficiary);
@@ -729,9 +734,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddBeneficiaryModal; 
-
-<style>
+export default AddBeneficiaryModal; <style>
 {`
 .hide-scrollbar-modal::-webkit-scrollbar {
   display: none;
@@ -746,5 +749,13 @@ export default AddBeneficiaryModal;
 .custom-select-dropdown:focus {
   outline: 2px solid var(--emerald-green);
 }
+.modal-input-field::placeholder {
+  color: #adb5bd;
+}
+.modal-input-field:focus {
+  outline: 2px solid var(--emerald-green);
+  border-color: var(--emerald-green);
+}
 `}
 </style> 
+
