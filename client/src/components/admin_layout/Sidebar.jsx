@@ -85,29 +85,34 @@ const Sidebar = ({ active, setActive }) => {
   return (
     <aside
       style={{
-        width: '245px',
-        background: 'var(--white)',
-        color: 'var(--dark-brown)',
-        height: '100vh',
+        background: 'var(--dark-green)',
+        color: 'var(--white)',
         boxSizing: 'border-box',
-        padding: '2.8rem 0.3rem',
+        padding: '1.6rem 0.3rem',
         fontFamily: 'var(--font-main)',
         fontWeight: 400,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        //borderRight: '1px solid var(--tan)',
-        //boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)', 
-        //zIndex: 1,
+        flex: 1, // Fill available space
+        minHeight: 0, // Important for flex child
+        marginTop: '-0.3rem',
+        //borderRadius: ' 0 7px 0 0 ',
+        //border: '1px solid var(--forest-green)',
+        //borderTop: '1px solid var(--tan)',
+        //boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)'
       }}
     >
-      <nav style={{ width: '100%', padding: '0 0.5rem' }}>
+      <nav style={{ width: '100%', padding: '0 0.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <ul
           style={{
             listStyle: 'none',
             padding: 0,
             margin: 0,
             width: '100%',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {navItems.map((item) => {
@@ -122,9 +127,9 @@ const Sidebar = ({ active, setActive }) => {
                 <button
                   style={{
                     width: '95%',
-                    background: isParentActive ? 'var(--white)' : 'none',
+                    background: isParentActive ? 'var(--white)' : 'transparent',
                     border: 'none',
-                    color: isParentActive ? 'var(--primary-green)' : 'inherit',
+                    color: isParentActive ? 'var(--dark-green)' : 'var(--light-gray)',
                     fontFamily: 'inherit',
                     fontWeight: isParentActive ? 600 : 400,
                     fontSize: '0.75rem',
@@ -135,7 +140,7 @@ const Sidebar = ({ active, setActive }) => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    borderLeft: isParentActive ? '3px solid var(--primary-green)' : '3px solid transparent',
+                    borderLeft: isParentActive ? '3px solid var(--ivory)' : '3px solid transparent',
                     transition: 'all 0.2s ease',
                     justifyContent: 'flex-start',
                     textAlign: 'left',
@@ -165,15 +170,15 @@ const Sidebar = ({ active, setActive }) => {
                   onMouseOver={(e) => {
                     if (!isParentActive) {
                       e.currentTarget.style.background = 'var(--mint-green)';
-                      e.currentTarget.style.color = 'var(--primary-green)';
-                      e.currentTarget.querySelector('span:first-child').style.color = 'var(--primary-green)';
+                      e.currentTarget.style.color = 'var(--dark-brown)';
+                      e.currentTarget.querySelector('span:first-child').style.color = 'var(--dark-brown)';
                     }
                   }}
                   onMouseOut={(e) => {
                     if (!isParentActive) {
-                      e.currentTarget.style.background = 'none';
-                      e.currentTarget.style.color = 'inherit';
-                      e.currentTarget.querySelector('span:first-child').style.color = 'inherit';
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'var(--white)';
+                      e.currentTarget.querySelector('span:first-child').style.color = 'var(--light-gray)';
                     }
                   }}
                 >
@@ -185,7 +190,7 @@ const Sidebar = ({ active, setActive }) => {
                       width: 20,
                       minWidth: 20,
                       fontSize: '1.1rem',
-                      color: isParentActive ? 'var(--primary-green)' : 'inherit',
+                      color: isParentActive ? 'var(--dark-green)' : 'inherit',
                       transition: 'color 0.2s ease',
                     }}
                   >
@@ -206,7 +211,7 @@ const Sidebar = ({ active, setActive }) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '0.9rem',
-                        color: isParentActive ? 'var(--primary-green)' : 'inherit',
+                        color: isParentActive ? 'var(--dark-green)' : 'inherit',
                         transition: 'transform 0.2s ease',
                         transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                       }}
@@ -237,9 +242,9 @@ const Sidebar = ({ active, setActive }) => {
                           <button
                             style={{
                               width: '83%',
-                              background: isSubActive ? 'var(--mint-green)' : 'rgba(0, 0, 0, 0.03)',
+                              background: isSubActive ? 'var(--white)' : 'transparent',
                               border: 'none',
-                              color: isSubActive ? 'var(--primary-green)' : 'var(--deep-brown)',
+                              color: isSubActive ? 'var(--dark-green)' : 'var(--light-gray)',
                               fontFamily: 'inherit',
                               fontWeight: isSubActive ? 600 : 500,
                               fontSize: '0.7rem',
@@ -250,7 +255,7 @@ const Sidebar = ({ active, setActive }) => {
                               display: 'flex',
                               alignItems: 'center',
                               gap: '0.7rem',
-                              borderLeft: isSubActive ? '2px solid var(--primary-green)' : '2px solid transparent',
+                              borderLeft: isSubActive ? '2px solid var(--ivory)' : '2px solid transparent',
                               transition: 'all 0.2s ease',
                               justifyContent: 'flex-start',
                               textAlign: 'left',
@@ -267,16 +272,16 @@ const Sidebar = ({ active, setActive }) => {
                             onMouseOver={(e) => {
                               if (!isSubActive) {
                                 e.currentTarget.style.background = 'var(--mint-green)';
-                                e.currentTarget.style.color = 'var(--primary-green)';
+                                e.currentTarget.style.color = 'var(--dark-brown)';
                                 if (subItem.inactiveIcon) {
-                                  e.currentTarget.querySelector('span:first-child').style.color = 'var(--primary-green)';
+                                 e.currentTarget.querySelector('span:first-child').style.color = 'var(--dark-brown)';
                                 }
                               }
                             }}
                             onMouseOut={(e) => {
                               if (!isSubActive) {
                                 e.currentTarget.style.background = 'rgba(0, 0, 0, 0.03)';
-                                e.currentTarget.style.color = 'var(--deep-brown)';
+                                e.currentTarget.style.color = 'var(--white)';
                                 if (subItem.inactiveIcon) {
                                   e.currentTarget.querySelector('span:first-child').style.color = 'var(--deep-brown)';
                                 }

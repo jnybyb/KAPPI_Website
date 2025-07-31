@@ -1,23 +1,33 @@
 import React from 'react';
 
 const MainContent = ({ children }) => (
-<main
+  <main
     style={{
       flex: 1,
       minWidth: 0,
       background: 'var(--white)',
-      padding: '0 0.3rem',
-      borderRadius: '12px',
+      borderRadius: '7px',
       fontFamily: 'var(--font-main)',
-      minHeight: '95%',
-      height: '95%',
-      boxShadow: '0 8px 12px 0 rgba(0,0,0,0.12), 0 1.5px 6px 0 rgba(0,0,0,0.18)',
+      //boxShadow: '0 8px 12px 0 rgba(0,0,0,0.1), 0 1.5px 6px 0 rgba(0,0,0,0.28)',
+      //padding: '1px',
       overflow: 'auto',
-      margin: '30px 12px',  
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      //margin: '0.8rem 1rem',
+      minHeight: 0, // Important for flex child
     }}
   >
-    {children}
+    <div style={{ 
+      flex: 1, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: 0,
+      height: '100%'
+    }}>
+      {children}
+    </div>
   </main>
 );
 
-export default MainContent; 
+export default MainContent;

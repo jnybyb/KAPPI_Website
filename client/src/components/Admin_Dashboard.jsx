@@ -24,7 +24,13 @@ const DashboardScreen = () => {
     
     default:
       content = (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ 
+          padding: '2rem',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
+        }}>
           <h2 style={{ color: '#2c5530' }}>Dashboard</h2>
           <p>Welcome to the dashboard!</p>
         </div>
