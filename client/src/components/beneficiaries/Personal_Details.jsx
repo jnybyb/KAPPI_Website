@@ -1,11 +1,90 @@
 import React, { useState, useEffect } from 'react';
+import { HiOutlineTrash } from "react-icons/hi2";
+import { AiOutlineEdit } from "react-icons/ai";
 import AddBeneficiaryModal from './AddBeneficiaryModal';
+import EditBeneficiaryModal from './EditBeneficiaryModal';
 import AlertModal from '../AlertModal';
 import Button from '../common/Button';
 import { beneficiaryAPI, handleAPIError } from '../../services/api';
 
+// Table column headers
+const columns = [
+  'Beneficiary ID',
+  'Picture',
+  'Name',
+  'Address',
+  'Gender',
+  'BDate',
+  'Age',
+  'Status',
+  'Cellphone',
+  ''
+];
+
+// Common styles
+const getCommonStyles = () => ({
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    border: '1px solid #e8f5e8'
+  },
+  tableHeader: {
+    padding: '8px 12px',
+    textAlign: 'left',
+    fontWeight: '600',
+    color: '#2c5530',
+    borderBottom: '2px solid #2c5530',
+    fontSize: '0.65rem',
+    height: '32px'
+  },
+  tableCell: {
+    padding: '6px 16px',
+    fontSize: '0.6rem',
+    color: '#495057',
+    height: '28px',
+    verticalAlign: 'middle'
+  },
+  emptyState: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '3rem',
+    textAlign: 'center',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    flex: '1',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  actionButton: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '2px',
+    borderRadius: '3px',
+    transition: 'color 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});
+
+// Alert modal configuration
+const getAlertConfig = (type, title, message) => ({
+  isOpen: true,
+  type,
+  title,
+  message
+});
+
 const PersonalDetailsTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
   const [alertModal, setAlertModal] = useState({
     isOpen: false,
     type: 'success',
@@ -20,17 +99,7 @@ const PersonalDetailsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  const columns = [
-    'Beneficiary ID',
-    'Picture',
-    'Name',
-    'Address',
-    'Gender',
-    'BDate',
-    'Age',
-    'Status',
-    'Cellphone'
-  ];
+  const styles = getCommonStyles();
 
   // Fetch beneficiaries from API
   const fetchBeneficiaries = async () => {
@@ -64,61 +133,88 @@ const PersonalDetailsTable = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleAddBeneficiary = async (newBeneficiary) => {
-    try {
-      // Prepare data for API - now using individual fields
-      const apiData = {
-        beneficiaryId: newBeneficiary.beneficiaryId,
-        firstName: newBeneficiary.firstName,
-        middleName: newBeneficiary.middleName,
-        lastName: newBeneficiary.lastName,
-        purok: newBeneficiary.purok,
-        barangay: newBeneficiary.barangay,
-        municipality: newBeneficiary.municipality,
-        province: newBeneficiary.province,
-        gender: newBeneficiary.gender,
-        birthDate: newBeneficiary.birthDate,
-        maritalStatus: newBeneficiary.maritalStatus,
-        cellphone: newBeneficiary.cellphone,
-        age: newBeneficiary.age,
-        picture: newBeneficiary.picture instanceof File ? newBeneficiary.picture : null
-      };
+  // Prepare API data from beneficiary object
+  const prepareApiData = (beneficiary) => ({
+    beneficiaryId: beneficiary.beneficiaryId,
+    firstName: beneficiary.firstName,
+    middleName: beneficiary.middleName,
+    lastName: beneficiary.lastName,
+    purok: beneficiary.purok,
+    barangay: beneficiary.barangay,
+    municipality: beneficiary.municipality,
+    province: beneficiary.province,
+    gender: beneficiary.gender,
+    birthDate: beneficiary.birthDate,
+    maritalStatus: beneficiary.maritalStatus,
+    cellphone: beneficiary.cellphone,
+    age: beneficiary.age,
+    picture: beneficiary.picture instanceof File ? beneficiary.picture : null
+  });
 
-      // Send to API
-      const response = await beneficiaryAPI.create(apiData);
-      
-      // Refresh the data
+  // Handle API operations with alert feedback
+  const handleApiOperation = async (operation, successMessage, errorMessage) => {
+    try {
+      await operation();
       await fetchBeneficiaries();
-      
-      // Show success message using AlertModal
-      setAlertModal({
-        isOpen: true,
-        type: 'success',
-        title: 'Success',
-        message: 'Beneficiary has been added successfully.'
-      });
+      setAlertModal(getAlertConfig('success', 'Success', successMessage));
     } catch (err) {
       const errorData = handleAPIError(err);
       setError(errorData.message);
-      console.error('Error adding beneficiary:', err);
-      
-      // Show error message using AlertModal
-      setAlertModal({
-        isOpen: true,
-        type: 'error',
-        title: 'Failed',
-        message: errorData.message || 'Failed to add beneficiary. Please try again.'
-      });
+      console.error('API operation error:', err);
+      setAlertModal(getAlertConfig('error', 'Failed', errorData.message || errorMessage));
     }
   };
 
-  // Handle alert modal close and then close AddBeneficiary modal
+  const handleAddBeneficiary = async (newBeneficiary) => {
+    const apiData = prepareApiData(newBeneficiary);
+    await handleApiOperation(
+      () => beneficiaryAPI.create(apiData),
+      'Beneficiary has been added successfully.',
+      'Failed to add beneficiary. Please try again.'
+    );
+  };
+
+  // Handle alert modal close and then close modals
   const handleAlertClose = () => {
     setAlertModal({ ...alertModal, isOpen: false });
-    // Close AddBeneficiary modal after alert closes
+    // Close modals after alert closes
     setTimeout(() => {
       setIsModalOpen(false);
+      setIsEditModalOpen(false);
+      setSelectedBeneficiary(null);
     }, 100);
+  };
+
+  // Handle edit beneficiary
+  const handleEditBeneficiary = async (updatedBeneficiary) => {
+    const apiData = prepareApiData(updatedBeneficiary);
+    await handleApiOperation(
+      () => beneficiaryAPI.update(selectedBeneficiary._id, apiData),
+      'Beneficiary has been updated successfully.',
+      'Failed to update beneficiary. Please try again.'
+    );
+  };
+
+  // Handle delete beneficiary
+  const handleDeleteBeneficiary = async (beneficiaryId) => {
+    await handleApiOperation(
+      () => beneficiaryAPI.delete(beneficiaryId),
+      'Beneficiary has been deleted successfully.',
+      'Failed to delete beneficiary. Please try again.'
+    );
+  };
+
+  // Handle edit button click
+  const handleEditClick = (beneficiary) => {
+    setSelectedBeneficiary(beneficiary);
+    setIsEditModalOpen(true);
+  };
+
+  // Handle delete button click
+  const handleDeleteClick = (beneficiary) => {
+    if (window.confirm('Are you sure you want to delete this beneficiary? This action cannot be undone.')) {
+      handleDeleteBeneficiary(beneficiary._id);
+    }
   };
 
   // Format data for display
@@ -172,12 +268,45 @@ const PersonalDetailsTable = () => {
       }),
       age: beneficiary.age,
       status: beneficiary.maritalStatus,
-      cellphone: beneficiary.cellphone
+      cellphone: beneficiary.cellphone,
+      actions: (
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          justifyContent: 'center'
+        }}>
+          <button
+            onClick={() => handleEditClick(beneficiary)}
+            style={{
+              ...styles.actionButton,
+              color: '#2c5530'
+            }}
+            onMouseOver={(e) => e.target.style.color = '#1e3a23'}
+            onMouseOut={(e) => e.target.style.color = '#2c5530'}
+            title="Edit"
+          >
+                         <AiOutlineEdit size={12} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(beneficiary)}
+            style={{
+              ...styles.actionButton,
+              color: '#dc3545'
+            }}
+            onMouseOver={(e) => e.target.style.color = '#c82333'}
+            onMouseOut={(e) => e.target.style.color = '#dc3545'}
+            title="Delete"
+          >
+                         <HiOutlineTrash size={12} />
+          </button>
+        </div>
+      )
     };
   };
 
   return (
     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      {/* Header section */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
         <div>
           <h2 style={{ color: '#2c5530', marginBottom: '0.2rem', fontSize: '1.4rem' }}>Personal Details</h2>
@@ -208,53 +337,26 @@ const PersonalDetailsTable = () => {
         </div>
       )}
       
-      <div style={{ overflowX: 'auto', marginTop: '1rem', flex: '1', overflowY: 'auto' }}>
+      {/* Table container */}
+      <div style={{ overflowX: 'auto', marginTop: '1rem', flex: '1', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {loading ? (
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '3rem',
-            textAlign: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
+          <div style={styles.emptyState}>
             <div style={{ fontSize: '48px', marginBottom: '1rem' }}>⏳</div>
             <h3 style={{ color: '#6c757d', marginBottom: '0.5rem', fontSize: '1.125rem' }}>Loading...</h3>
             <p style={{ color: '#6c757d', margin: '0', fontSize: '0.875rem' }}>Please wait while we fetch the beneficiary data.</p>
           </div>
         ) : personalDetailsData.length === 0 ? (
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '3rem',
-            textAlign: 'center',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
+          <div style={styles.emptyState}>
             <div style={{ fontSize: '48px', marginBottom: '1rem' }}>📋</div>
             <h3 style={{ color: '#6c757d', marginBottom: '0.5rem', fontSize: '1.125rem' }}>No Data Available</h3>
             <p style={{ color: '#6c757d', margin: '0', fontSize: '0.875rem' }}>No beneficiary records found. Click "Add Beneficiary" to add new records.</p>
           </div>
         ) : (
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            border: '1px solid #e8f5e8'
-          }}>
+          <table style={styles.table}>
             <thead>
               <tr style={{ backgroundColor: '#f0f8f0'}}>
                 {columns.map((column, index) => (
-                  <th key={index} style={{
-                    padding: '8px 12px',
-                    textAlign: 'left',
-                    fontWeight: '600',
-                    color: '#2c5530',
-                    borderBottom: '2px solid #2c5530',
-                    fontSize: '0.65rem',
-                    height: '32px'
-                  }}>
+                  <th key={index} style={styles.tableHeader}>
                     {column}
                   </th>
                 ))}
@@ -274,11 +376,8 @@ const PersonalDetailsTable = () => {
                   onMouseOut={(e) => e.currentTarget.style.backgroundColor = rowIndex % 2 === 0 ? '#fafdfa' : 'white'}>
                     {Object.values(displayData).map((cell, cellIndex) => (
                       <td key={cellIndex} style={{
-                        padding: cellIndex === 1 ? '6px 8px 6px 16px' : cellIndex === 2 ? '6px 16px 6px 8px' : '6px 16px',
-                        fontSize: '0.6rem',
-                        color: '#495057',
-                        height: '28px',
-                        verticalAlign: 'middle'
+                        ...styles.tableCell,
+                        padding: cellIndex === 1 ? '6px 8px 6px 16px' : cellIndex === 2 ? '6px 16px 6px 8px' : '6px 16px'
                       }}>
                         {cell}
                       </td>
@@ -346,11 +445,24 @@ const PersonalDetailsTable = () => {
         </div>
       )}
 
+      {/* Modals */}
       {isModalOpen && (
         <AddBeneficiaryModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleAddBeneficiary}
+        />
+      )}
+
+      {isEditModalOpen && selectedBeneficiary && (
+        <EditBeneficiaryModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedBeneficiary(null);
+          }}
+          onSubmit={handleEditBeneficiary}
+          beneficiary={selectedBeneficiary}
         />
       )}
 

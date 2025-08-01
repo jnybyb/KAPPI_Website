@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Main content container component
 const MainContent = ({ children }) => (
   <main
     style={{
@@ -8,16 +9,14 @@ const MainContent = ({ children }) => (
       background: 'var(--white)',
       borderRadius: '7px',
       fontFamily: 'var(--font-main)',
-      //boxShadow: '0 8px 12px 0 rgba(0,0,0,0.1), 0 1.5px 6px 0 rgba(0,0,0,0.28)',
-      //padding: '1px',
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      //margin: '0.8rem 1rem',
       minHeight: 0, // Important for flex child
     }}
   >
+    {/* Content wrapper */}
     <div style={{ 
       flex: 1, 
       display: 'flex', 

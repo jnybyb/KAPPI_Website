@@ -32,7 +32,7 @@ const Header = () => (
           fontWeight: 800, 
           fontSize: '1.5rem',
           letterSpacing: '0.1px',
-          fontFamily: 'Montserrat, sans-serif',
+          fontFamily: 'Montserrat',
           color: 'var(--dark-green)',
           lineHeight: '1.4'
         }}>
@@ -59,7 +59,7 @@ const Header = () => (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         <span style={{ 
           fontWeight: 500, 
-          fontSize: '1.2rem',
+          fontSize: '1rem',
           color: 'var(--forest-green)',
           fontFamily: 'Montserrat'
         }}>

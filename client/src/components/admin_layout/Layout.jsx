@@ -4,8 +4,8 @@ import Sidebar from './Sidebar';
 import MainContent from './MainContent';
 
 const Layout = ({ children, active, setActive }) => {
-  const headerHeight = '78px'; // Consistent across screens
-  const sidebarWidth = '245px'; // Adjust as needed for responsiveness
+  const headerHeight = '78px';
+  const sidebarWidth = '245px'; 
 
   return (
     <div
@@ -29,7 +29,7 @@ const Layout = ({ children, active, setActive }) => {
         style={{
           display: 'flex',
           flex: 1,
-          minHeight: 0, // Important for flex child
+          minHeight: 0,
           width: '100%',
         }}
       >
@@ -47,7 +47,7 @@ const Layout = ({ children, active, setActive }) => {
         <div
           style={{
             flex: 1,
-            minWidth: 0, // Important for flex child
+            minWidth: 0,
             display: 'flex',
             flexDirection: 'column',
           }}

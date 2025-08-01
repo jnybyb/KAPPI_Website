@@ -23,9 +23,9 @@ import {
 } from 'react-icons/bs';
 import {
   IoChevronDown,
-  IoChevronUp,
 } from 'react-icons/io5';
 
+// Navigation items configuration
 const navItems = [
   { 
     label: 'Dashboard', 
@@ -67,6 +67,68 @@ const navItems = [
   },
 ];
 
+// Common button styles
+const getButtonStyles = (isActive, isParent = false) => ({
+  width: isParent ? '95%' : '83%',
+  background: isActive ? 'var(--white)' : 'transparent',
+  border: 'none',
+  color: isActive ? 'var(--dark-green)' : 'var(--light-gray)',
+  fontFamily: 'inherit',
+  fontWeight: isActive ? 600 : (isParent ? 400 : 500),
+  fontSize: isParent ? '0.75rem' : '0.7rem',
+  padding: isParent ? '0.65rem .75rem' : '0.75rem 0.75rem 0.65rem 1rem',
+  borderRadius: isParent ? '7px' : '6px',
+  cursor: 'pointer',
+  outline: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  gap: isParent ? '0.5rem' : '0.7rem',
+  borderLeft: isActive ? `${isParent ? '3px' : '2px'} solid var(--ivory)` : `${isParent ? '3px' : '2px'} solid transparent`,
+  transition: 'all 0.2s ease',
+  justifyContent: 'flex-start',
+  textAlign: 'left',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
+  boxShadow: isActive && isParent ? '0 1px 10px rgba(12, 17, 15, 0.10)' : 'none',
+  transform: isActive && isParent ? 'translateY(-1px)' : 'none',
+});
+
+// Icon container styles
+const getIconStyles = (isActive, isParent = false) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: isParent ? 20 : 16,
+  minWidth: isParent ? 20 : 16,
+  fontSize: isParent ? '1.1rem' : '0.9rem',
+  color: isActive ? (isParent ? 'var(--dark-green)' : 'var(--primary-green)') : 'inherit',
+  transition: 'color 0.2s ease',
+});
+
+// Hover handlers
+const getHoverHandlers = (isActive, isParent = false) => ({
+  onMouseOver: (e) => {
+    if (!isActive) {
+      e.currentTarget.style.background = 'var(--mint-green)';
+      e.currentTarget.style.color = 'var(--dark-brown)';
+      const iconElement = e.currentTarget.querySelector('span:first-child');
+      if (iconElement) {
+        iconElement.style.color = 'var(--dark-brown)';
+      }
+    }
+  },
+  onMouseOut: (e) => {
+    if (!isActive) {
+      e.currentTarget.style.background = isParent ? 'transparent' : 'rgba(0, 0, 0, 0.03)';
+      e.currentTarget.style.color = 'var(--white)';
+      const iconElement = e.currentTarget.querySelector('span:first-child');
+      if (iconElement) {
+        iconElement.style.color = isParent ? 'var(--light-gray)' : 'var(--deep-brown)';
+      }
+    }
+  }
+});
+
 const Sidebar = ({ active, setActive }) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
 
@@ -82,6 +144,29 @@ const Sidebar = ({ active, setActive }) => {
 
   const isItemExpanded = (itemLabel) => expandedItems.has(itemLabel);
 
+  // Main button click handler
+  const handleMainButtonClick = (item) => {
+    if (item.hasSubcategories) {
+      if (active === item.label || isItemExpanded(item.label)) {
+        toggleExpanded(item.label);
+      } else {
+        setActive(item.label);
+        setExpandedItems(new Set([item.label]));
+      }
+    } else {
+      setActive(item.label);
+      setExpandedItems(new Set());
+    }
+  };
+
+  // Subcategory button click handler
+  const handleSubButtonClick = (subItem, parentItem) => {
+    setActive(subItem.label);
+    if (!isItemExpanded(parentItem.label)) {
+      setExpandedItems(new Set([...expandedItems, parentItem.label]));
+    }
+  };
+
   return (
     <aside
       style={{
@@ -94,8 +179,8 @@ const Sidebar = ({ active, setActive }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        flex: 1, // Fill available space
-        minHeight: 0, // Important for flex child
+        flex: 1,
+        minHeight: 0,
         marginTop: '-0.3rem',
       }}
     >
@@ -120,84 +205,16 @@ const Sidebar = ({ active, setActive }) => {
 
             return (
               <li key={item.label} style={{ marginBottom: '.75rem', width: '100%' }}>
+                {/* Main navigation button */}
                 <button
-                  style={{
-                    width: '95%',
-                    background: isParentActive ? 'var(--white)' : 'transparent',
-                    border: 'none',
-                    color: isParentActive ? 'var(--dark-green)' : 'var(--light-gray)',
-                    fontFamily: 'inherit',
-                    fontWeight: isParentActive ? 600 : 400,
-                    fontSize: '0.75rem',
-                    padding: '0.65rem .75rem',
-                    borderRadius: '7px',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    borderLeft: isParentActive ? '3px solid var(--ivory)' : '3px solid transparent',
-                    transition: 'all 0.2s ease',
-                    justifyContent: 'flex-start',
-                    textAlign: 'left',
-                    whiteSpace: 'normal',
-                    wordBreak: 'break-word',
-                    boxShadow: isParentActive ? '0 1px 10px rgba(12, 17, 15, 0.10)' : 'none',
-                    transform: isParentActive ? 'translateY(-1px)' : 'none',
-                  }}
-                  onClick={() => {
-                    if (item.hasSubcategories) {
-                      // If this is a main button with subcategories
-                      if (active === item.label || isExpanded) {
-                        // If already active or expanded, just toggle expansion
-                        toggleExpanded(item.label);
-                      } else {
-                        // If not active, set as active and expand
-                        setActive(item.label);
-                        setExpandedItems(new Set([item.label]));
-                      }
-                    } else {
-                      // If this is a regular main button (Dashboard, Map, Reports)
-                      setActive(item.label);
-                      // Close all expanded subcategories when switching to a different main button
-                      setExpandedItems(new Set());
-                    }
-                  }}
-                  onMouseOver={(e) => {
-                    if (!isParentActive) {
-                      e.currentTarget.style.background = 'var(--mint-green)';
-                      e.currentTarget.style.color = 'var(--dark-brown)';
-                      e.currentTarget.querySelector('span:first-child').style.color = 'var(--dark-brown)';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!isParentActive) {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = 'var(--white)';
-                      e.currentTarget.querySelector('span:first-child').style.color = 'var(--light-gray)';
-                    }
-                  }}
+                  style={getButtonStyles(isParentActive, true)}
+                  onClick={() => handleMainButtonClick(item)}
+                  {...getHoverHandlers(isParentActive, true)}
                 >
-                  <span
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 20,
-                      minWidth: 20,
-                      fontSize: '1.1rem',
-                      color: isParentActive ? 'var(--dark-green)' : 'inherit',
-                      transition: 'color 0.2s ease',
-                    }}
-                  >
+                  <span style={getIconStyles(isParentActive, true)}>
                     {isParentActive ? item.activeIcon : item.inactiveIcon}
                   </span>
-                  <span
-                    style={{
-                      flex: 1,
-                      textAlign: 'left',
-                    }}
-                  >
+                  <span style={{ flex: 1, textAlign: 'left' }}>
                     {item.label}
                   </span>
                   {item.hasSubcategories && (
@@ -236,67 +253,12 @@ const Sidebar = ({ active, setActive }) => {
                       return (
                         <li key={subItem.label} style={{ marginBottom: '0.5rem', width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
                           <button
-                            style={{
-                              width: '83%',
-                              background: isSubActive ? 'var(--white)' : 'transparent',
-                              border: 'none',
-                              color: isSubActive ? 'var(--dark-green)' : 'var(--light-gray)',
-                              fontFamily: 'inherit',
-                              fontWeight: isSubActive ? 600 : 500,
-                              fontSize: '0.7rem',
-                              padding: '0.75rem 0.75rem 0.65rem 1rem',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              outline: 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.7rem',
-                              borderLeft: isSubActive ? '2px solid var(--ivory)' : '2px solid transparent',
-                              transition: 'all 0.2s ease',
-                              justifyContent: 'flex-start',
-                              textAlign: 'left',
-                              whiteSpace: 'normal',
-                              wordBreak: 'break-word',
-                            }}
-                            onClick={() => {
-                              setActive(subItem.label);
-                              // Ensure the parent item stays expanded when subcategory is clicked
-                              if (!isExpanded) {
-                                setExpandedItems(new Set([...expandedItems, item.label]));
-                              }
-                            }}
-                            onMouseOver={(e) => {
-                              if (!isSubActive) {
-                                e.currentTarget.style.background = 'var(--mint-green)';
-                                e.currentTarget.style.color = 'var(--dark-brown)';
-                                if (subItem.inactiveIcon) {
-                                 e.currentTarget.querySelector('span:first-child').style.color = 'var(--dark-brown)';
-                                }
-                              }
-                            }}
-                            onMouseOut={(e) => {
-                              if (!isSubActive) {
-                                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.03)';
-                                e.currentTarget.style.color = 'var(--white)';
-                                if (subItem.inactiveIcon) {
-                                  e.currentTarget.querySelector('span:first-child').style.color = 'var(--deep-brown)';
-                                }
-                              }
-                            }}
+                            style={getButtonStyles(isSubActive, false)}
+                            onClick={() => handleSubButtonClick(subItem, item)}
+                            {...getHoverHandlers(isSubActive, false)}
                           >
                             {subItem.inactiveIcon ? (
-                              <span
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  width: 16,
-                                  minWidth: 16,
-                                  fontSize: '0.9rem',
-                                  color: isSubActive ? 'var(--primary-green)' : 'var(--deep-brown)',
-                                  transition: 'color 0.2s ease',
-                                }}
-                              >
+                              <span style={getIconStyles(isSubActive, false)}>
                                 {isSubActive ? subItem.activeIcon : subItem.inactiveIcon}
                               </span>
                             ) : (
@@ -310,12 +272,7 @@ const Sidebar = ({ active, setActive }) => {
                                 }}
                               />
                             )}
-                            <span
-                              style={{
-                                flex: 1,
-                                textAlign: 'left',
-                              }}
-                            >
+                            <span style={{ flex: 1, textAlign: 'left' }}>
                               {subItem.label}
                             </span>
                           </button>

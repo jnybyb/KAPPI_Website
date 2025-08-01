@@ -1,6 +1,59 @@
 import React, { useState, useEffect, memo } from 'react';
 
-// Reusable input field component - moved outside to prevent re-creation
+// Common styles
+const getCommonStyles = () => ({
+  label: {
+    display: 'block',
+    marginBottom: '0.5rem',
+    fontWeight: '500',
+    color: 'var(--black)',
+    fontSize: '12px'
+  },
+  input: {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s ease',
+    height: '44px'
+  },
+  select: {
+    width: '100%',
+    padding: '10px 32px 10px 12px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    boxSizing: 'border-box',
+    backgroundColor: 'white',
+    height: '44px',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    appearance: 'none',
+    transition: 'border-color 0.2s ease'
+  },
+  error: {
+    color: 'var(--red)',
+    fontSize: '11px',
+    marginTop: '4px',
+    display: 'block'
+  },
+  sectionTitle: {
+    color: 'var(--black)',
+    marginBottom: '1.5rem',
+    fontSize: '1rem',
+    fontWeight: '600'
+  },
+  button: {
+    padding: '12px 24px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '500',
+    transition: 'all 0.2s ease'
+  }
+});
+
+// Reusable input field component
 const InputField = memo(({ 
   name, 
   label, 
@@ -9,41 +62,34 @@ const InputField = memo(({
   placeholder, 
   required = false, 
   error 
-}) => (
-  <div>
-    <label style={{
-      display: 'block',
-      marginBottom: '0.5rem',
-      fontWeight: '500',
-      color: 'var(--black)',
-      fontSize: '12px'
-    }}>
-      {label} {required && '*'}
-    </label>
-    <input
-      type="text"
-      name={name}
-      value={value}
-      onChange={onChange}
-      style={{
-        width: '100%',
-        padding: '10px 12px',
-        border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-        borderRadius: '6px',
-        fontSize: '12px',
-        boxSizing: 'border-box',
-        transition: 'border-color 0.2s ease'
-      }}
-      placeholder={placeholder}
-      className="modal-input-field"
-    />
-    {error && (
-      <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{error}</span>
-    )}
-  </div>
-));
+}) => {
+  const styles = getCommonStyles();
+  
+  return (
+    <div>
+      <label style={styles.label}>
+        {label} {required && '*'}
+      </label>
+      <input
+        type="text"
+        name={name}
+        value={value}
+        onChange={onChange}
+        style={{
+          ...styles.input,
+          border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`
+        }}
+        placeholder={placeholder}
+        className="modal-input-field"
+      />
+      {error && (
+        <span style={styles.error}>{error}</span>
+      )}
+    </div>
+  );
+});
 
-// Reusable select field component - moved outside to prevent re-creation
+// Reusable select field component
 const SelectField = memo(({ 
   name, 
   label, 
@@ -52,127 +98,72 @@ const SelectField = memo(({
   options, 
   required = false, 
   error 
-}) => (
-  <div>
-    <label style={{
-      display: 'block',
-      marginBottom: '0.5rem',
-      fontWeight: '500',
-      color: 'var(--black)',
-      fontSize: '12px'
-    }}>
-      {label} {required && '*'}
-    </label>
-    <div style={{ position: 'relative' }}>
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        style={{
-          width: '100%',
-          padding: '10px 32px 10px 12px',
-          border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-          borderRadius: '6px',
+}) => {
+  const styles = getCommonStyles();
+  
+  return (
+    <div>
+      <label style={styles.label}>
+        {label} {required && '*'}
+      </label>
+      <div style={{ position: 'relative' }}>
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          style={{
+            ...styles.select,
+            border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
+            color: value ? 'var(--black)' : '#adb5bd'
+          }}
+          className="custom-select-dropdown"
+        >
+          <option value="" disabled style={{ color: '#adb5bd' }}>Select {label.toLowerCase()}</option>
+          {options.map(option => (
+            <option key={option.value || option} value={option.value || option} style={{ color: 'var(--black)' }}>
+              {option.label || option}
+            </option>
+          ))}
+        </select>
+        {/* Custom arrow icon */}
+        <span style={{
+          position: 'absolute',
+          right: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'none',
           fontSize: '12px',
-          boxSizing: 'border-box',
-          color: value ? 'var(--black)' : '#adb5bd',
-          backgroundColor: 'white',
-          height: '44px',
-          WebkitAppearance: 'none',
-          MozAppearance: 'none',
-          appearance: 'none',
-          transition: 'border-color 0.2s ease'
-        }}
-        className="custom-select-dropdown"
-      >
-        <option value="" disabled style={{ color: '#adb5bd' }}>Select {label.toLowerCase()}</option>
-        {options.map(option => (
-          <option key={option.value || option} value={option.value || option} style={{ color: 'var(--black)' }}>
-            {option.label || option}
-          </option>
-        ))}
-      </select>
-      {/* Custom arrow icon */}
-      <span style={{
-        position: 'absolute',
-        right: '12px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        pointerEvents: 'none',
-        fontSize: '12px',
-        color: '#adb5bd'
-      }}>
-        ▼
-      </span>
+          color: '#adb5bd'
+        }}>
+          ▼
+        </span>
+      </div>
+      {error && (
+        <span style={styles.error}>{error}</span>
+      )}
     </div>
-    {error && (
-      <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{error}</span>
-    )}
-  </div>
-));
+  );
+});
 
-const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    purok: '',
-    barangay: '',
-    municipality: '',
-    province: '',
-    gender: '',
-    birthDate: '', // new single date field
-    maritalStatus: '',
-    cellphone: '',
-    picture: null
-  });
+// Form data structure
+const getInitialFormData = () => ({
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  purok: '',
+  barangay: '',
+  municipality: '',
+  province: '',
+  gender: '',
+  birthDate: '',
+  maritalStatus: '',
+  cellphone: '',
+  picture: null
+});
 
-  const [errors, setErrors] = useState({});
-  const [beneficiaryId, setBeneficiaryId] = useState('');
-
-  // Generate beneficiary ID on component mount
-  useEffect(() => {
-    generateBeneficiaryId();
-  }, []);
-
-  // Update Beneficiary ID generator: two letters, two numbers (e.g., AB12)
-  const generateBeneficiaryId = () => {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numbers = '0123456789';
-    const randomLetter1 = letters[Math.floor(Math.random() * letters.length)];
-    const randomLetter2 = letters[Math.floor(Math.random() * letters.length)];
-    const randomNumber1 = numbers[Math.floor(Math.random() * numbers.length)];
-    const randomNumber2 = numbers[Math.floor(Math.random() * numbers.length)];
-    const newId = `${randomLetter1}${randomLetter2}${randomNumber1}${randomNumber2}`;
-    setBeneficiaryId(newId);
-  };
-
-  const months = [
-    { value: '01', label: 'January' },
-    { value: '02', label: 'February' },
-    { value: '03', label: 'March' },
-    { value: '04', label: 'April' },
-    { value: '05', label: 'May' },
-    { value: '06', label: 'June' },
-    { value: '07', label: 'July' },
-    { value: '08', label: 'August' },
-    { value: '09', label: 'September' },
-    { value: '10', label: 'October' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'December' }
-  ];
-
-  const days = Array.from({ length: 31 }, (_, i) => {
-    const day = i + 1;
-    return { value: day.toString().padStart(2, '0'), label: day.toString() };
-  });
-
-  const years = Array.from({ length: 100 }, (_, i) => {
-    const year = new Date().getFullYear() - i;
-    return { value: year.toString(), label: year.toString() };
-  });
-
-  const provinces = [
+// Data options
+const getDataOptions = () => ({
+  provinces: [
     'Abra', 'Agusan del Norte', 'Agusan del Sur', 'Aklan', 'Albay', 'Antique', 'Apayao', 'Aurora',
     'Basilan', 'Bataan', 'Batanes', 'Batangas', 'Benguet', 'Biliran', 'Bohol', 'Bukidnon',
     'Bulacan', 'Cagayan', 'Camarines Norte', 'Camarines Sur', 'Camiguin', 'Capiz', 'Catanduanes',
@@ -186,8 +177,46 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     'Sorsogon', 'South Cotabato', 'Southern Leyte', 'Sultan Kudarat', 'Sulu', 'Surigao del Norte',
     'Surigao del Sur', 'Tarlac', 'Tawi-Tawi', 'Zambales', 'Zamboanga del Norte', 'Zamboanga del Sur',
     'Zamboanga Sibugay'
-  ];
+  ],
+  genderOptions: [
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' }
+  ],
+  maritalStatusOptions: [
+    { value: 'Single', label: 'Single' },
+    { value: 'Married', label: 'Married' },
+    { value: 'Widowed', label: 'Widowed' },
+    { value: 'Divorced', label: 'Divorced' },
+    { value: 'Separated', label: 'Separated' }
+  ]
+});
 
+const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
+  const [formData, setFormData] = useState(getInitialFormData());
+  const [errors, setErrors] = useState({});
+  const [beneficiaryId, setBeneficiaryId] = useState('');
+
+  const styles = getCommonStyles();
+  const options = getDataOptions();
+
+  // Generate beneficiary ID on component mount
+  useEffect(() => {
+    generateBeneficiaryId();
+  }, []);
+
+  // Generate beneficiary ID: two letters, two numbers (e.g., AB12)
+  const generateBeneficiaryId = () => {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const randomLetter1 = letters[Math.floor(Math.random() * letters.length)];
+    const randomLetter2 = letters[Math.floor(Math.random() * letters.length)];
+    const randomNumber1 = numbers[Math.floor(Math.random() * numbers.length)];
+    const randomNumber2 = numbers[Math.floor(Math.random() * numbers.length)];
+    const newId = `${randomLetter1}${randomLetter2}${randomNumber1}${randomNumber2}`;
+    setBeneficiaryId(newId);
+  };
+
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     
@@ -215,6 +244,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     }
   };
 
+  // Validate form fields
   const validateForm = () => {
     const newErrors = {};
     
@@ -264,6 +294,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Calculate age from birth date
   const calculateAge = (birthDateStr) => {
     if (!birthDateStr) return 0;
     
@@ -278,14 +309,19 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     return age;
   };
 
+  // Reset form to initial state
+  const resetForm = () => {
+    setFormData(getInitialFormData());
+    setErrors({});
+    generateBeneficiaryId();
+  };
+
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       const age = calculateAge(formData.birthDate);
-      const formattedBirthDate = formData.birthDate ? new Date(formData.birthDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-      const fullName = `${formData.firstName} ${formData.middleName ? formData.middleName + ' ' : ''}${formData.lastName}`.trim();
-      const fullAddress = `${formData.purok}, ${formData.barangay}, ${formData.municipality}, ${formData.province}`;
       
       const newBeneficiary = {
         beneficiaryId,
@@ -305,44 +341,13 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
       };
       
       onSubmit(newBeneficiary);
-      
-      // Reset form
-      setFormData({
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        purok: '',
-        barangay: '',
-        municipality: '',
-        province: '',
-        gender: '',
-        birthDate: '',
-        maritalStatus: '',
-        cellphone: '',
-        picture: null
-      });
-      setErrors({});
-      generateBeneficiaryId();
+      resetForm();
     }
   };
 
+  // Handle modal close
   const handleClose = () => {
-    setFormData({
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      purok: '',
-      barangay: '',
-      municipality: '',
-      province: '',
-      gender: '',
-      birthDate: '',
-      maritalStatus: '',
-      cellphone: '',
-      picture: null
-    });
-    setErrors({});
-    generateBeneficiaryId();
+    resetForm();
     onClose();
   };
 
@@ -417,12 +422,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
         <form onSubmit={handleSubmit} style={{ padding: '2rem' }}>
           {/* Personal Information Section */}
           <div style={{ marginBottom: '2.5rem' }}>
-            <h3 style={{ 
-              color: 'var(--black)', 
-              marginBottom: '1.5rem', 
-              fontSize: '1rem', 
-              fontWeight: '600'
-            }}>
+            <h3 style={styles.sectionTitle}>
               Personal Information
             </h3>
             
@@ -457,105 +457,106 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 />
               </div>
 
-              {/* Profile Picture */}
-              <div style={{
-                minWidth: '160px',
-                maxWidth: '160px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '1rem'
-              }}>
-                <div style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  backgroundColor: '#f8f9fa',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '40px',
-                  border: '2px dashed #ced4da',
-                  overflow: 'hidden',
-                  transition: 'border-color 0.2s ease'
-                }}>
-                  {formData.picture ? (
-                    <img
-                      src={URL.createObjectURL(formData.picture)}
-                      alt="Preview"
+                             {/* Profile Picture Container */}
+               <div style={{
+                 minWidth: '200px',
+                 maxWidth: '200px',
+                 display: 'flex',
+                 flexDirection: 'column',
+                 alignItems: 'center',
+                 gap: '.5rem',
+                 marginTop: '1rem',
+                 padding: '.6rem',
+                 backgroundColor: '#f8f9fa',
+                 borderRadius: '8px',
+                 border: '1px solid #e9ecef',
+                 boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+               }}>
+                 <div style={{
+                   width: '70px',
+                   height: '70px',
+                   borderRadius: '50%',
+                   backgroundColor: 'white',
+                   display: 'flex',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+                   fontSize: '40px',
+                   border: '2px dashed #ced4da',
+                   overflow: 'hidden',
+                   transition: 'border-color 0.2s ease'
+                 }}>
+                   {formData.picture ? (
+                     <img
+                       src={URL.createObjectURL(formData.picture)}
+                       alt="Preview"
+                       style={{
+                         width: '100%',
+                         height: '100%',
+                         objectFit: 'cover',
+                         borderRadius: '50%'
+                       }}
+                     />
+                   ) : (
+                     <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
+                       <circle cx="12" cy="8" r="4"/>
+                       <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
+                     </svg>
+                   )}
+                 </div>
+                 
+                                   <div style={{ width: '100%', textAlign: 'center' }}>
+                    <input
+                      type="file"
+                      name="picture"
+                      accept="image/*"
+                      onChange={handleInputChange}
                       style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        borderRadius: '50%'
+                        width: '70%',
+                        display: 'block',
+                        margin: '0 auto 0.2rem auto',
+                        border: '1px solid var(--gray)',
+                        borderRadius: '4px',
+                        fontSize: '8px',
+                        background: 'white',
+                        cursor: 'pointer',
+                        boxSizing: 'border-box',
+                        textAlign: 'center',
+                        padding: '4px'
                       }}
                     />
-                  ) : (
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
-                      <circle cx="12" cy="8" r="4"/>
-                      <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
-                    </svg>
-                  )}
-                </div>
-                
-                <div style={{ width: '100%', textAlign: 'center' }}>
-                  <input
-                    type="file"
-                    name="picture"
-                    accept="image/*"
-                    onChange={handleInputChange}
-                    style={{
-                      width: '100%',
-                      display: 'block',
-                      margin: '0 0 0.5rem 0',
-                      border: '1px solid var(--gray)',
-                      borderRadius: '4px',
-                      fontSize: '10px',
-                      background: 'var(--light-gray)',
-                      cursor: 'pointer',
-                      boxSizing: 'border-box',
-                      textAlign: 'center',
-                      padding: '4px'
-                    }}
-                  />
-                  <p style={{ fontSize: '10px', color: '#6c757d', margin: '0' }}>
-                    Upload profile picture
-                  </p>
-                </div>
-                
-                <div style={{
-                  padding: '0.75rem',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '6px',
-                  textAlign: 'center',
-                  fontWeight: '500',
-                  fontSize: '11px',
-                  color: 'var(--black)',
-                  width: '100%',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div style={{ marginBottom: '0.25rem' }}>Beneficiary ID</div>
-                  <span style={{ 
-                    fontWeight: '700', 
-                    color: 'var(--emerald-green)', 
-                    letterSpacing: '1px', 
-                    fontSize: '16px' 
-                  }}>
-                    {beneficiaryId}
-                  </span>
-                </div>
-              </div>
+                    <p style={{ fontSize: '8px', color: '#6c757d', marginBottom: '.5rem' }}>
+                      Upload profile picture
+                    </p>
+                  </div>
+                 
+                 <div style={{
+                   padding: '0.75rem',
+                   backgroundColor: 'white',
+                   borderRadius: '6px',
+                   textAlign: 'center',
+                   fontWeight: '500',
+                   fontSize: '11px',
+                   color: 'var(--black)',
+                   width: '100%',
+                   border: '1px solid #e9ecef'
+                 }}>
+                   <div style={{ marginBottom: '0.25rem', fontSize: '10px' }}>Beneficiary ID</div>
+                   <span style={{ 
+                     fontWeight: '700', 
+                     color: 'var(--emerald-green)', 
+                     letterSpacing: '1px', 
+                     fontSize: '16px' 
+                   }}>
+                     {beneficiaryId}
+                   </span>
+                 </div>
+               </div>
             </div>
           </div>
 
           {/* Address Section */}
           <div style={{ marginBottom: '2.5rem' }}>
-            <h3 style={{ 
-              color: 'var(--black)', 
-              marginBottom: '1.5rem', 
-              fontSize: '1rem', 
-              fontWeight: '600'
-            }}>
+            <h3 style={styles.sectionTitle}>
               Address Information
             </h3>
             
@@ -592,7 +593,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 label="Province"
                 value={formData.province}
                 onChange={handleInputChange}
-                options={provinces}
+                options={options.provinces}
                 required
                 error={errors.province}
               />
@@ -601,12 +602,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
 
           {/* Personal Details Section */}
           <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ 
-              color: 'var(--black)', 
-              marginBottom: '1.5rem', 
-              fontSize: '1rem', 
-              fontWeight: '600'
-            }}>
+            <h3 style={styles.sectionTitle}>
               Personal Details
             </h3>
             
@@ -616,10 +612,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 label="Gender"
                 value={formData.gender}
                 onChange={handleInputChange}
-                options={[
-                  { value: 'Male', label: 'Male' },
-                  { value: 'Female', label: 'Female' }
-                ]}
+                options={options.genderOptions}
                 required
                 error={errors.gender}
               />
@@ -628,13 +621,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 label="Marital Status"
                 value={formData.maritalStatus}
                 onChange={handleInputChange}
-                options={[
-                  { value: 'Single', label: 'Single' },
-                  { value: 'Married', label: 'Married' },
-                  { value: 'Widowed', label: 'Widowed' },
-                  { value: 'Divorced', label: 'Divorced' },
-                  { value: 'Separated', label: 'Separated' }
-                ]}
+                options={options.maritalStatusOptions}
                 required
                 error={errors.maritalStatus}
               />
@@ -642,13 +629,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '500',
-                  color: 'var(--black)',
-                  fontSize: '12px'
-                }}>
+                <label style={styles.label}>
                   Birth Date *
                 </label>
                 <input
@@ -657,30 +638,19 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.birthDate}
                   onChange={handleInputChange}
                   style={{
-                    width: '100%',
-                    padding: '10px 12px',
+                    ...styles.input,
                     border: `1px solid ${errors.birthDate ? 'var(--red)' : 'var(--gray)'}`,
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    boxSizing: 'border-box',
                     color: formData.birthDate ? 'var(--black)' : '#adb5bd',
-                    backgroundColor: 'white',
-                    transition: 'border-color 0.2s ease'
+                    backgroundColor: 'white'
                   }}
                   placeholder="Select birth date"
                 />
                 {errors.birthDate && (
-                  <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.birthDate}</span>
+                  <span style={styles.error}>{errors.birthDate}</span>
                 )}
               </div>
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '500',
-                  color: 'var(--black)',
-                  fontSize: '12px'
-                }}>
+                <label style={styles.label}>
                   Age
                 </label>
                 <input
@@ -688,12 +658,8 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.birthDate ? calculateAge(formData.birthDate) : '—'}
                   readOnly
                   style={{
-                    width: '100%',
-                    padding: '10px 12px',
+                    ...styles.input,
                     border: '1px solid var(--gray)',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    boxSizing: 'border-box',
                     backgroundColor: '#f8f9fa',
                     color: 'var(--black)',
                     cursor: 'not-allowed'
@@ -726,15 +692,10 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
               type="button"
               onClick={handleClose}
               style={{
-                padding: '12px 24px',
+                ...styles.button,
                 border: '1px solid var(--gray)',
                 backgroundColor: 'white',
-                color: 'var(--black)',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '500',
-                transition: 'all 0.2s ease'
+                color: 'var(--black)'
               }}
               onMouseEnter={(e) => {
                 e.target.style.backgroundColor = '#f8f9fa';
@@ -750,15 +711,10 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             <button
               type="submit"
               style={{
-                padding: '12px 24px',
+                ...styles.button,
                 border: 'none',
                 backgroundColor: 'var(--dark-green)',
-                color: 'white',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '500',
-                transition: 'background-color 0.2s ease'
+                color: 'white'
               }}
               onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--emerald-green)'}
               onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--dark-green)'}
@@ -772,7 +728,9 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddBeneficiaryModal; <style>
+export default AddBeneficiaryModal;
+
+<style>
 {`
 .hide-scrollbar-modal::-webkit-scrollbar {
   display: none;
