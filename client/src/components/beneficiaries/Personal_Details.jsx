@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddBeneficiaryModal from './AddBeneficiaryModal';
 import AlertModal from '../AlertModal';
+import Button from '../common/Button';
 import { beneficiaryAPI, handleAPIError } from '../../services/api';
 
 const PersonalDetailsTable = () => {
@@ -14,6 +15,10 @@ const PersonalDetailsTable = () => {
   const [personalDetailsData, setPersonalDetailsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const columns = [
     'Beneficiary ID',
@@ -47,6 +52,17 @@ const PersonalDetailsTable = () => {
   useEffect(() => {
     fetchBeneficiaries();
   }, []);
+
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = personalDetailsData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(personalDetailsData.length / itemsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleAddBeneficiary = async (newBeneficiary) => {
     try {
@@ -110,16 +126,50 @@ const PersonalDetailsTable = () => {
     return {
       beneficiaryId: beneficiary.beneficiaryId,
       picture: beneficiary.picture ? (
-        <img 
-          src={`http://localhost:5000${beneficiary.picture}`} 
-          alt="Profile" 
-          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-        />
-      ) : '👤',
+        <div style={{ 
+          width: '28px', 
+          height: '28px', 
+          borderRadius: '50%', 
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f8f9fa',
+          border: '2px solid #e8f5e8'
+        }}>
+          <img 
+            src={`http://localhost:5000${beneficiary.picture}`} 
+            alt="Profile" 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+      ) : (
+        <div style={{ 
+          width: '28px', 
+          height: '28px', 
+          borderRadius: '50%', 
+          backgroundColor: '#f8f9fa',
+          border: '2px solid #e8f5e8',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12px'
+        }}>
+          👤
+        </div>
+      ),
       name: beneficiary.fullName || `${beneficiary.firstName} ${beneficiary.middleName ? beneficiary.middleName + ' ' : ''}${beneficiary.lastName}`.trim(),
       address: beneficiary.fullAddress || `${beneficiary.purok}, ${beneficiary.barangay}, ${beneficiary.municipality}, ${beneficiary.province}`,
       gender: beneficiary.gender,
-      bDate: new Date(beneficiary.birthDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      bDate: new Date(beneficiary.birthDate).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      }),
       age: beneficiary.age,
       status: beneficiary.maritalStatus,
       cellphone: beneficiary.cellphone
@@ -127,34 +177,20 @@ const PersonalDetailsTable = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
         <div>
-          <h2 style={{ color: '#2c5530', marginBottom: '0.5rem' }}>Personal Details</h2>
-          <p style={{ color: '#6c757d', margin: '0' }}>Beneficiary personal information and contact details</p>
+          <h2 style={{ color: '#2c5530', marginBottom: '0.2rem', fontSize: '1.4rem' }}>Personal Details</h2>
+          <p style={{ color: '#6c757d', margin: '0', fontSize: '0.60rem' }}>Beneficiary personal information and contact details</p>
         </div>
-        <button
+        <Button
           onClick={() => setIsModalOpen(true)}
-          style={{
-            backgroundColor: 'var(--dark-green)',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: 'background-color 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.backgroundColor = 'var(--emerald-green)'}
-          onMouseOut={(e) => e.target.style.backgroundColor = 'var(--dark-green)'}
+          type="primary"
+          size="medium"
+          icon="+"
         >
-          <span style={{ fontSize: '16px' }}>+</span>
           Add Beneficiary
-        </button>
+        </Button>
       </div>
 
       {/* Error Message */}
@@ -162,16 +198,17 @@ const PersonalDetailsTable = () => {
         <div style={{
           backgroundColor: '#f8d7da',
           color: '#721c24',
-          padding: '12px',
+          padding: '10px',
           borderRadius: '4px',
           marginBottom: '1rem',
-          border: '1px solid #f5c6cb'
+          border: '1px solid #f5c6cb',
+          fontSize: '0.65rem'
         }}>
           {error}
         </div>
       )}
       
-      <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
+      <div style={{ overflowX: 'auto', marginTop: '1rem', flex: '1', overflowY: 'auto' }}>
         {loading ? (
           <div style={{
             backgroundColor: 'white',
@@ -181,8 +218,8 @@ const PersonalDetailsTable = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ fontSize: '48px', marginBottom: '1rem' }}>⏳</div>
-            <h3 style={{ color: '#6c757d', marginBottom: '0.5rem' }}>Loading...</h3>
-            <p style={{ color: '#6c757d', margin: '0' }}>Please wait while we fetch the beneficiary data.</p>
+            <h3 style={{ color: '#6c757d', marginBottom: '0.5rem', fontSize: '1.125rem' }}>Loading...</h3>
+            <p style={{ color: '#6c757d', margin: '0', fontSize: '0.875rem' }}>Please wait while we fetch the beneficiary data.</p>
           </div>
         ) : personalDetailsData.length === 0 ? (
           <div style={{
@@ -193,8 +230,8 @@ const PersonalDetailsTable = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ fontSize: '48px', marginBottom: '1rem' }}>📋</div>
-            <h3 style={{ color: '#6c757d', marginBottom: '0.5rem' }}>No Data Available</h3>
-            <p style={{ color: '#6c757d', margin: '0' }}>No beneficiary records found. Click "Add Beneficiary" to add new records.</p>
+            <h3 style={{ color: '#6c757d', marginBottom: '0.5rem', fontSize: '1.125rem' }}>No Data Available</h3>
+            <p style={{ color: '#6c757d', margin: '0', fontSize: '0.875rem' }}>No beneficiary records found. Click "Add Beneficiary" to add new records.</p>
           </div>
         ) : (
           <table style={{
@@ -203,18 +240,20 @@ const PersonalDetailsTable = () => {
             backgroundColor: 'white',
             borderRadius: '8px',
             overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            border: '1px solid #e8f5e8'
           }}>
             <thead>
-              <tr style={{ backgroundColor: '#f8f9fa' }}>
+              <tr style={{ backgroundColor: '#f0f8f0'}}>
                 {columns.map((column, index) => (
                   <th key={index} style={{
-                    padding: '12px 16px',
+                    padding: '8px 12px',
                     textAlign: 'left',
                     fontWeight: '600',
-                    color: '#495057',
-                    borderBottom: '2px solid #dee2e6',
-                    fontSize: '14px'
+                    color: '#2c5530',
+                    borderBottom: '2px solid #2c5530',
+                    fontSize: '0.65rem',
+                    height: '32px'
                   }}>
                     {column}
                   </th>
@@ -222,20 +261,24 @@ const PersonalDetailsTable = () => {
               </tr>
             </thead>
             <tbody>
-              {personalDetailsData.map((beneficiary, rowIndex) => {
+              {currentItems.map((beneficiary, rowIndex) => {
                 const displayData = formatBeneficiaryForDisplay(beneficiary);
                 return (
                   <tr key={beneficiary._id || rowIndex} style={{
-                    borderBottom: '1px solid #dee2e6',
-                    transition: 'background-color 0.2s'
+                    borderBottom: '1px solid #e8f5e8',
+                    transition: 'background-color 0.2s',
+                    height: '28px',
+                    backgroundColor: rowIndex % 2 === 0 ? '#fafdfa' : 'white'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}>
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f8f0'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = rowIndex % 2 === 0 ? '#fafdfa' : 'white'}>
                     {Object.values(displayData).map((cell, cellIndex) => (
                       <td key={cellIndex} style={{
-                        padding: '12px 16px',
-                        fontSize: '14px',
-                        color: '#495057'
+                        padding: cellIndex === 1 ? '6px 8px 6px 16px' : cellIndex === 2 ? '6px 16px 6px 8px' : '6px 16px',
+                        fontSize: '0.6rem',
+                        color: '#495057',
+                        height: '28px',
+                        verticalAlign: 'middle'
                       }}>
                         {cell}
                       </td>
@@ -247,6 +290,61 @@ const PersonalDetailsTable = () => {
           </table>
         )}
       </div>
+
+      {/* Pagination - Always at bottom */}
+      {!loading && personalDetailsData.length > 0 && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '0.5rem',
+          padding: '0.5rem',
+          backgroundColor: 'white',
+          borderTop: '0.5px solid rgba(36, 99, 59, 0.3)', // 30% opacity
+          position: 'sticky',
+          bottom: '0',
+          flexShrink: 0
+        }}>
+          {/* Items info - bottom left */}
+          <div style={{ fontSize: '0.65rem', color: '#6c757d' }}>
+            Items {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, personalDetailsData.length)} of {personalDetailsData.length} entries
+          </div>
+
+          {/* Pagination controls - bottom right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              type="pagination"
+              size="pagination"
+            >
+              &lt;
+            </Button>
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                type={currentPage === page ? 'paginationActive' : 'pagination'}
+                size="pagination"
+                style={{ minWidth: '28px' }}
+              >
+                {page}
+              </Button>
+            ))}
+
+            <Button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              type="pagination"
+              size="pagination"
+            >
+              &gt;
+            </Button>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <AddBeneficiaryModal

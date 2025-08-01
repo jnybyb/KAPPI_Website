@@ -97,10 +97,6 @@ const Sidebar = ({ active, setActive }) => {
         flex: 1, // Fill available space
         minHeight: 0, // Important for flex child
         marginTop: '-0.3rem',
-        //borderRadius: ' 0 7px 0 0 ',
-        //border: '1px solid var(--forest-green)',
-        //borderTop: '1px solid var(--tan)',
-        //boxShadow: '4px 0 12px rgba(0, 0, 0, 0.05)'
       }}
     >
       <nav style={{ width: '100%', padding: '0 0.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>

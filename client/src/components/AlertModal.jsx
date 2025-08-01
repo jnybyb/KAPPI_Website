@@ -50,35 +50,35 @@ const AlertModal = ({
     const configs = {
       success: {
         icon: '✓',
-        headerColor: '#28a745',
-        iconColor: '#28a745',
-        textColor: '#000000',
-        buttonColor: '#28a745',
-        buttonTextColor: '#28a745'
+        headerColor: 'var(--emerald-green)',
+        iconColor: 'var(--emerald-green)',
+        textColor: 'var(--black)',
+        buttonColor: 'var(--emerald-green)',
+        buttonTextColor: 'var(--emerald-green)'
       },
       error: {
         icon: '✕',
-        headerColor: '#dc3545',
-        iconColor: '#dc3545',
-        textColor: '#000000',
-        buttonColor: '#dc3545',
-        buttonTextColor: '#dc3545'
+        headerColor: 'var(--red)',
+        iconColor: 'var(--red)',
+        textColor: 'var(--black)',
+        buttonColor: 'var(--red)',
+        buttonTextColor: 'var(--red)'
       },
       warning: {
         icon: '!',
-        headerColor: '#ffc107',
-        iconColor: '#ffc107',
-        textColor: '#000000',
-        buttonColor: '#ffc107',
-        buttonTextColor: '#ffc107'
+        headerColor: 'var(--olive-green)',
+        iconColor: 'var(--olive-green)',
+        textColor: 'var(--black)',
+        buttonColor: 'var(--olive-green)',
+        buttonTextColor: 'var(--olive-green)'
       },
       info: {
         icon: '?',
-        headerColor: '#17a2b8',
-        iconColor: '#17a2b8',
-        textColor: '#000000',
-        buttonColor: '#17a2b8',
-        buttonTextColor: '#17a2b8'
+        headerColor: 'var(--pine-green)',
+        iconColor: 'var(--pine-green)',
+        textColor: 'var(--black)',
+        buttonColor: 'var(--pine-green)',
+        buttonTextColor: 'var(--pine-green)'
       }
     };
     return configs[type] || configs.success;
@@ -96,24 +96,25 @@ const AlertModal = ({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,
-        padding: '20px'
+        padding: '7px'
       }}
       onClick={handleBackdropClick}
     >
       <div
         style={{
           backgroundColor: 'white',
-          borderRadius: '20px',
-          maxWidth: '400px',
+          borderRadius: '10px',
+          maxWidth: '250px',
           width: '100%',
           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
           overflow: 'hidden',
-          animation: 'modalSlideIn 0.3s ease-out'
+          animation: 'modalSlideIn 0.2s ease-out',
+          position: 'relative'
         }}
       >
         {/* Colored Header */}
@@ -125,7 +126,7 @@ const AlertModal = ({
           backgroundSize: '20px 20px, 15px 15px, 25px 25px'
         }} />
 
-        {/* Icon Circle */}
+        {/* Icon Circle - Fixed positioning */}
         <div style={{
           position: 'absolute',
           top: '30px',
@@ -139,7 +140,8 @@ const AlertModal = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 2
+          zIndex: 2,
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
         }}>
           <div style={{
             width: '40px',
@@ -167,7 +169,8 @@ const AlertModal = ({
             margin: '0 0 15px 0',
             color: config.textColor,
             fontSize: '20px',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            fontFamily: 'var(--font-main), Arial, sans-serif'
           }}>
             {title}
           </h3>
@@ -178,18 +181,19 @@ const AlertModal = ({
             color: config.textColor,
             fontSize: '14px',
             lineHeight: '1.5',
-            textAlign: 'center'
+            textAlign: 'center',
+            fontFamily: 'var(--font-main), Arial, sans-serif'
           }}>
             {message}
           </div>
 
-          {/* Actions */}
-          <div style={{
-            display: 'flex',
-            justifyContent: showCancel ? 'space-between' : 'center',
-            gap: '15px'
-          }}>
-            {showCancel && (
+          {/* Actions - Only show if showCancel is true */}
+          {showCancel && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '15px'
+            }}>
               <button
                 onClick={onCancel || onClose}
                 style={{
@@ -202,7 +206,8 @@ const AlertModal = ({
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '600',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  fontFamily: 'var(--font-main), Arial, sans-serif'
                 }}
                 onMouseOver={(e) => {
                   e.target.style.backgroundColor = config.buttonColor;
@@ -215,44 +220,34 @@ const AlertModal = ({
               >
                 {cancelText}
               </button>
-            )}
-            <button
-              onClick={onConfirm || onClose}
-              style={{
-                flex: 1,
-                padding: '12px 20px',
-                border: showCancel ? `2px solid ${config.buttonColor}` : 'none',
-                backgroundColor: showCancel ? 'white' : config.buttonColor,
-                color: showCancel ? config.buttonTextColor : 'white',
-                borderRadius: '25px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                transition: 'all 0.2s'
-              }}
-              onMouseOver={(e) => {
-                if (showCancel) {
+              <button
+                onClick={onConfirm || onClose}
+                style={{
+                  flex: 1,
+                  padding: '12px 20px',
+                  border: `2px solid ${config.buttonColor}`,
+                  backgroundColor: 'white',
+                  color: config.buttonTextColor,
+                  borderRadius: '25px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  fontFamily: 'var(--font-main), Arial, sans-serif'
+                }}
+                onMouseOver={(e) => {
                   e.target.style.backgroundColor = config.buttonColor;
                   e.target.style.color = 'white';
-                } else {
-                  e.target.style.backgroundColor = config.buttonColor === '#28a745' ? '#218838' :
-                    config.buttonColor === '#dc3545' ? '#c82333' :
-                    config.buttonColor === '#ffc107' ? '#e0a800' :
-                    config.buttonColor === '#17a2b8' ? '#138496' : config.buttonColor;
-                }
-              }}
-              onMouseOut={(e) => {
-                if (showCancel) {
+                }}
+                onMouseOut={(e) => {
                   e.target.style.backgroundColor = 'white';
                   e.target.style.color = config.buttonTextColor;
-                } else {
-                  e.target.style.backgroundColor = config.buttonColor;
-                }
-              }}
-            >
-              {confirmText}
-            </button>
-          </div>
+                }}
+              >
+                {confirmText}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

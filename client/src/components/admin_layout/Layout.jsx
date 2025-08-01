@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import MainContent from './MainContent';
 
 const Layout = ({ children, active, setActive }) => {
-  const headerHeight = '80px'; // Consistent across screens
+  const headerHeight = '78px'; // Consistent across screens
   const sidebarWidth = '245px'; // Adjust as needed for responsiveness
 
   return (

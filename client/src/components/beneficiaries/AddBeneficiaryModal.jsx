@@ -13,10 +13,10 @@ const InputField = memo(({
   <div>
     <label style={{
       display: 'block',
-      marginBottom: '0.1rem',
+      marginBottom: '0.5rem',
       fontWeight: '500',
       color: 'var(--black)',
-      fontSize: '15px'
+      fontSize: '12px'
     }}>
       {label} {required && '*'}
     </label>
@@ -27,17 +27,18 @@ const InputField = memo(({
       onChange={onChange}
       style={{
         width: '100%',
-        padding: '9px 9px',
+        padding: '10px 12px',
         border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-        borderRadius: '4px',
-        fontSize: '14px',
-        boxSizing: 'border-box'
+        borderRadius: '6px',
+        fontSize: '12px',
+        boxSizing: 'border-box',
+        transition: 'border-color 0.2s ease'
       }}
       placeholder={placeholder}
       className="modal-input-field"
     />
     {error && (
-      <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span>
+      <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{error}</span>
     )}
   </div>
 ));
@@ -55,10 +56,10 @@ const SelectField = memo(({
   <div>
     <label style={{
       display: 'block',
-      marginBottom: '0.1rem',
+      marginBottom: '0.5rem',
       fontWeight: '500',
       color: 'var(--black)',
-      fontSize: '15px'
+      fontSize: '12px'
     }}>
       {label} {required && '*'}
     </label>
@@ -69,18 +70,18 @@ const SelectField = memo(({
         onChange={onChange}
         style={{
           width: '100%',
-          padding: '9px 32px 9px 9px',
+          padding: '10px 32px 10px 12px',
           border: `1px solid ${error ? 'var(--red)' : 'var(--gray)'}`,
-          borderRadius: '4px',
-          fontSize: '14px',
+          borderRadius: '6px',
+          fontSize: '12px',
           boxSizing: 'border-box',
           color: value ? 'var(--black)' : '#adb5bd',
           backgroundColor: 'white',
-          maxHeight: '44px',
-          overflowY: 'auto',
+          height: '44px',
           WebkitAppearance: 'none',
           MozAppearance: 'none',
-          appearance: 'none'
+          appearance: 'none',
+          transition: 'border-color 0.2s ease'
         }}
         className="custom-select-dropdown"
       >
@@ -94,18 +95,18 @@ const SelectField = memo(({
       {/* Custom arrow icon */}
       <span style={{
         position: 'absolute',
-        right: '10px',
+        right: '12px',
         top: '50%',
         transform: 'translateY(-50%)',
         pointerEvents: 'none',
-        fontSize: '18px',
+        fontSize: '12px',
         color: '#adb5bd'
       }}>
         ▼
       </span>
     </div>
     {error && (
-      <span style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</span>
+      <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{error}</span>
     )}
   </div>
 ));
@@ -362,19 +363,17 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     }}>
       <div style={{
         backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '0 2rem 2rem 2rem', // Added bottom padding
+        borderRadius: '8px',
+        padding: '0',
         maxWidth: '550px',
-        minHeight: '600px',
+        width: '90%',
         maxHeight: '90vh',
         overflowY: 'auto',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-        // Hide scrollbar for all browsers
-        scrollbarWidth: 'none', // Firefox
-        msOverflowStyle: 'none', // IE 10+
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
         position: 'relative'
       }}
-      // Hide scrollbar for Webkit browsers
       className="hide-scrollbar-modal"
       >
         {/* Modal Header */}
@@ -382,15 +381,14 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid var(--dark-brown)',
-          padding: '1.7rem 0 1rem 0 ',
-          marginBottom: '1.5rem',
-          position: 'sticky',
-          top:0,
+          borderBottom: '.5px solid #e9ecef',
+          padding: '1.5rem 1.5rem',
           background: 'white',
+          position: 'sticky',
+          top: 0,
           zIndex: 10
         }}>
-          <h2 style={{ color: 'var(--black)', margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Add New Beneficiary</h2>
+          <h2 style={{ color: 'var(--black)', margin: 0, fontSize: '1rem', fontWeight: '600' }}>Add New Beneficiary</h2>
           <button
             onClick={handleClose}
             style={{
@@ -404,40 +402,82 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
               height: '30px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              borderRadius: '50%',
+              transition: 'background-color 0.2s ease'
             }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
             aria-label="Close"
           >
             ×
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} style={{ padding: '2rem' }}>
           {/* Personal Information Section */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: 'var(--black)', marginBottom: '1rem', fontSize: '16px' }}>Personal Information</h3>
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h3 style={{ 
+              color: 'var(--black)', 
+              marginBottom: '1.5rem', 
+              fontSize: '1rem', 
+              fontWeight: '600'
+            }}>
+              Personal Information
+            </h3>
+            
             <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+              {/* Name Fields */}
+              <div style={{ width: '60%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <InputField
+                  name="firstName"
+                  label="First Name"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  placeholder="Enter first name"
+                  required
+                  error={errors.firstName}
+                />
+                <InputField
+                  name="middleName"
+                  label="Middle Name"
+                  value={formData.middleName}
+                  onChange={handleInputChange}
+                  placeholder="Enter middle name (optional)"
+                  error={errors.middleName}
+                />
+                <InputField
+                  name="lastName"
+                  label="Last Name"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Enter last name"
+                  required
+                  error={errors.lastName}
+                />
+              </div>
+
               {/* Profile Picture */}
               <div style={{
-                minWidth: '130px',
-                maxWidth: '130px',
+                minWidth: '160px',
+                maxWidth: '160px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.7rem',
-                height: '100%'
+                gap: '1rem'
               }}>
                 <div style={{
-                  width: '75px',
-                  height: '75px',
+                  width: '80px',
+                  height: '80px',
                   borderRadius: '50%',
                   backgroundColor: '#f8f9fa',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '38px',
+                  fontSize: '40px',
                   border: '2px dashed #ced4da',
                   overflow: 'hidden',
+                  transition: 'border-color 0.2s ease'
                 }}>
                   {formData.picture ? (
                     <img
@@ -451,9 +491,13 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                       }}
                     />
                   ) : (
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/></svg>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
+                    </svg>
                   )}
                 </div>
+                
                 <div style={{ width: '100%', textAlign: 'center' }}>
                   <input
                     type="file"
@@ -463,167 +507,147 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                     style={{
                       width: '100%',
                       display: 'block',
-                      margin: '8px 0 2px 0',
+                      margin: '0 0 0.5rem 0',
                       border: '1px solid var(--gray)',
-                      borderRadius: '3px',
-                      fontSize: '9px',
+                      borderRadius: '4px',
+                      fontSize: '10px',
                       background: 'var(--light-gray)',
                       cursor: 'pointer',
                       boxSizing: 'border-box',
-                      textAlign: 'center'
+                      textAlign: 'center',
+                      padding: '4px'
                     }}
                   />
-                  <p style={{ fontSize: '10px', color: '#6c757d', margin: '2px 0 0 0' }}>
-                    Upload a profile picture
+                  <p style={{ fontSize: '10px', color: '#6c757d', margin: '0' }}>
+                    Upload profile picture
                   </p>
                 </div>
+                
                 <div style={{
-                  padding: '0.5rem',
-                  backgroundColor: 'var(--light-gray)',
-                  borderRadius: '4px',
+                  padding: '0.75rem',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '6px',
                   textAlign: 'center',
-                  fontWeight: 500,
-                  fontSize: '12px',
+                  fontWeight: '500',
+                  fontSize: '11px',
                   color: 'var(--black)',
-                  width: '100%'
+                  width: '100%',
+                  border: '1px solid #e9ecef'
                 }}>
-                  Beneficiary ID: <span style={{ fontWeight: '600', color: 'var(--emerald-green)', letterSpacing: '1px', fontSize: '18px' }}>{beneficiaryId}</span>
+                  <div style={{ marginBottom: '0.25rem' }}>Beneficiary ID</div>
+                  <span style={{ 
+                    fontWeight: '700', 
+                    color: 'var(--emerald-green)', 
+                    letterSpacing: '1px', 
+                    fontSize: '16px' 
+                  }}>
+                    {beneficiaryId}
+                  </span>
                 </div>
               </div>
-              {/* Info Column */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
-                  {/* Name Fields - Each in separate rows */}
-                  <InputField
-                    name="firstName"
-                    label="First Name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="Enter first name"
-                    required
-                    error={errors.firstName}
-                  />
-                  <InputField
-                    name="middleName"
-                    label="Middle Name"
-                    value={formData.middleName}
-                    onChange={handleInputChange}
-                    placeholder="Enter middle name (optional)"
-                    error={errors.middleName}
-                  />
-                  <InputField
-                    name="lastName"
-                    label="Last Name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Enter last name"
-                    required
-                    error={errors.lastName}
-                  />
-                </div>
             </div>
           </div>
 
           {/* Address Section */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: 'var(--black)', marginBottom: '1rem', fontSize: '16px' }}>Address Information</h3>
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h3 style={{ 
+              color: 'var(--black)', 
+              marginBottom: '1.5rem', 
+              fontSize: '1rem', 
+              fontWeight: '600'
+            }}>
+              Address Information
+            </h3>
             
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.7rem' }}>
-              <div style={{ flex: 1 }}>
-                <InputField
-                  name="purok"
-                  label="Purok"
-                  value={formData.purok}
-                  onChange={handleInputChange}
-                  placeholder="Enter purok"
-                  required
-                  error={errors.purok}
-                />
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <InputField
-                  name="barangay"
-                  label="Barangay"
-                  value={formData.barangay}
-                  onChange={handleInputChange}
-                  placeholder="Enter barangay"
-                  required
-                  error={errors.barangay}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.7rem' }}>
-              <div style={{ flex: 1 }}>
-                <InputField
-                  name="municipality"
-                  label="Municipality"
-                  value={formData.municipality}
-                  onChange={handleInputChange}
-                  placeholder="Enter municipality"
-                  required
-                  error={errors.municipality}
-                />
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <SelectField
-                  name="province"
-                  label="Province"
-                  value={formData.province}
-                  onChange={handleInputChange}
-                  options={provinces}
-                  required
-                  error={errors.province}
-                />
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <InputField
+                name="purok"
+                label="Purok"
+                value={formData.purok}
+                onChange={handleInputChange}
+                placeholder="Enter purok"
+                required
+                error={errors.purok}
+              />
+              <InputField
+                name="barangay"
+                label="Barangay"
+                value={formData.barangay}
+                onChange={handleInputChange}
+                placeholder="Enter barangay"
+                required
+                error={errors.barangay}
+              />
+              <InputField
+                name="municipality"
+                label="Municipality"
+                value={formData.municipality}
+                onChange={handleInputChange}
+                placeholder="Enter municipality"
+                required
+                error={errors.municipality}
+              />
+              <SelectField
+                name="province"
+                label="Province"
+                value={formData.province}
+                onChange={handleInputChange}
+                options={provinces}
+                required
+                error={errors.province}
+              />
             </div>
           </div>
 
           {/* Personal Details Section */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h3 style={{ color: 'var(--black)', marginBottom: '1rem', fontSize: '16px' }}>Personal Details</h3>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.7rem' }}>
-              <div style={{ flex: 1 }}>
-                <SelectField
-                  name="gender"
-                  label="Gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  options={[
-                    { value: 'Male', label: 'Male' },
-                    { value: 'Female', label: 'Female' }
-                  ]}
-                  required
-                  error={errors.gender}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <SelectField
-                  name="maritalStatus"
-                  label="Marital Status"
-                  value={formData.maritalStatus}
-                  onChange={handleInputChange}
-                  options={[
-                    { value: 'Single', label: 'Single' },
-                    { value: 'Married', label: 'Married' },
-                    { value: 'Widowed', label: 'Widowed' },
-                    { value: 'Divorced', label: 'Divorced' },
-                    { value: 'Separated', label: 'Separated' }
-                  ]}
-                  required
-                  error={errors.maritalStatus}
-                />
-              </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <h3 style={{ 
+              color: 'var(--black)', 
+              marginBottom: '1.5rem', 
+              fontSize: '1rem', 
+              fontWeight: '600'
+            }}>
+              Personal Details
+            </h3>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <SelectField
+                name="gender"
+                label="Gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' }
+                ]}
+                required
+                error={errors.gender}
+              />
+              <SelectField
+                name="maritalStatus"
+                label="Marital Status"
+                value={formData.maritalStatus}
+                onChange={handleInputChange}
+                options={[
+                  { value: 'Single', label: 'Single' },
+                  { value: 'Married', label: 'Married' },
+                  { value: 'Widowed', label: 'Widowed' },
+                  { value: 'Divorced', label: 'Divorced' },
+                  { value: 'Separated', label: 'Separated' }
+                ]}
+                required
+                error={errors.maritalStatus}
+              />
             </div>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.7rem' }}>
-              <div style={{ flex: 1 }}>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
                 <label style={{
                   display: 'block',
-                  marginBottom: '0.1rem',
+                  marginBottom: '0.5rem',
                   fontWeight: '500',
                   color: 'var(--black)',
-                  fontSize: '15px'
+                  fontSize: '12px'
                 }}>
                   Birth Date *
                 </label>
@@ -634,27 +658,28 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                   onChange={handleInputChange}
                   style={{
                     width: '100%',
-                    padding: '9px 9px',
+                    padding: '10px 12px',
                     border: `1px solid ${errors.birthDate ? 'var(--red)' : 'var(--gray)'}`,
-                    borderRadius: '4px',
-                    fontSize: '14px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
                     boxSizing: 'border-box',
                     color: formData.birthDate ? 'var(--black)' : '#adb5bd',
-                    backgroundColor: 'white'
+                    backgroundColor: 'white',
+                    transition: 'border-color 0.2s ease'
                   }}
                   placeholder="Select birth date"
                 />
                 {errors.birthDate && (
-                  <span style={{ color: 'var(--red)', fontSize: '13px' }}>{errors.birthDate}</span>
+                  <span style={{ color: 'var(--red)', fontSize: '11px', marginTop: '4px', display: 'block' }}>{errors.birthDate}</span>
                 )}
               </div>
-              <div style={{ flex: 1 }}>
+              <div>
                 <label style={{
                   display: 'block',
-                  marginBottom: '0.1rem',
+                  marginBottom: '0.5rem',
                   fontWeight: '500',
                   color: 'var(--black)',
-                  fontSize: '15px'
+                  fontSize: '12px'
                 }}>
                   Age
                 </label>
@@ -664,10 +689,10 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                   readOnly
                   style={{
                     width: '100%',
-                    padding: '9px 9px',
+                    padding: '10px 12px',
                     border: '1px solid var(--gray)',
-                    borderRadius: '4px',
-                    fontSize: '14px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
                     boxSizing: 'border-box',
                     backgroundColor: '#f8f9fa',
                     color: 'var(--black)',
@@ -677,37 +702,47 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: '0.7rem' }}>
-              <InputField
-                name="cellphone"
-                label="Cellphone Number"
-                value={formData.cellphone}
-                onChange={handleInputChange}
-                placeholder="09XXXXXXXXX"
-                required
-                error={errors.cellphone}
-              />
-            </div>
+            
+            <InputField
+              name="cellphone"
+              label="Cellphone Number"
+              value={formData.cellphone}
+              onChange={handleInputChange}
+              placeholder="09XXXXXXXXX"
+              required
+              error={errors.cellphone}
+            />
           </div>
 
+          {/* Action Buttons */}
           <div style={{
             display: 'flex',
             gap: '1rem',
             justifyContent: 'flex-end',
-            marginTop: '2rem'
+            paddingTop: '1rem',
+            borderTop: '1px solid #e9ecef'
           }}>
             <button
               type="button"
               onClick={handleClose}
               style={{
-                padding: '10px 20px',
+                padding: '12px 24px',
                 border: '1px solid var(--gray)',
                 backgroundColor: 'white',
                 color: 'var(--black)',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500'
+                fontSize: '12px',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#f8f9fa';
+                e.target.style.borderColor = '#adb5bd';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'white';
+                e.target.style.borderColor = 'var(--gray)';
               }}
             >
               Cancel
@@ -715,15 +750,18 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             <button
               type="submit"
               style={{
-                padding: '10px 20px',
+                padding: '12px 24px',
                 border: 'none',
                 backgroundColor: 'var(--dark-green)',
                 color: 'white',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500'
+                fontSize: '12px',
+                fontWeight: '500',
+                transition: 'background-color 0.2s ease'
               }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--emerald-green)'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--dark-green)'}
             >
               Add Beneficiary
             </button>
@@ -740,7 +778,7 @@ export default AddBeneficiaryModal; <style>
   display: none;
 }
 .custom-select-dropdown option {
-  font-size: 14px;
+  font-size: 12px;
 }
 .custom-select-dropdown {
   max-height: 44px;
@@ -755,6 +793,33 @@ export default AddBeneficiaryModal; <style>
 .modal-input-field:focus {
   outline: 2px solid var(--emerald-green);
   border-color: var(--emerald-green);
+}
+/* Fix dropdown overflow */
+select.custom-select-dropdown {
+  max-height: 44px;
+}
+select.custom-select-dropdown:focus {
+  max-height: 200px;
+  overflow-y: auto;
+}
+select.custom-select-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+select.custom-select-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+select.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+select.custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+/* Hide scrollbar for Firefox */
+select.custom-select-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 `}
 </style> 

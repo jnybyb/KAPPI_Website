@@ -30,7 +30,7 @@ const Header = () => (
       <div style={{ display: 'flex', flexDirection: 'column'}}>
         <span style={{ 
           fontWeight: 800, 
-          fontSize: '1.6rem',
+          fontSize: '1.5rem',
           letterSpacing: '0.1px',
           fontFamily: 'Montserrat, sans-serif',
           color: 'var(--dark-green)',
@@ -40,7 +40,7 @@ const Header = () => (
         </span>
         <span style={{ 
           fontWeight: 500, 
-          fontSize: '0.77rem',
+          fontSize: '0.75rem',
           letterSpacing: '0.3px',
           fontFamily: 'Montserrat',
           color: 'var(--dark-brown)',
