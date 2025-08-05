@@ -14,7 +14,6 @@ const AlertModal = ({
   autoClose = false,
   autoCloseDelay = 3000
 }) => {
-  // Auto-close functionality
   React.useEffect(() => {
     if (isOpen && autoClose && !showCancel) {
       const timer = setTimeout(() => {
@@ -24,7 +23,6 @@ const AlertModal = ({
     }
   }, [isOpen, autoClose, autoCloseDelay, onClose, showCancel]);
 
-  // Handle escape key
   React.useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -38,14 +36,12 @@ const AlertModal = ({
     }
   }, [isOpen, onClose]);
 
-  // Handle backdrop click
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // Get alert configuration based on type
   const getAlertConfig = () => {
     const configs = {
       success: {
@@ -100,7 +96,7 @@ const AlertModal = ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1000,
+        zIndex: 2000,
         padding: '7px'
       }}
       onClick={handleBackdropClick}
@@ -117,7 +113,6 @@ const AlertModal = ({
           position: 'relative'
         }}
       >
-        {/* Colored Header */}
         <div style={{
           backgroundColor: config.headerColor,
           height: '60px',
@@ -126,7 +121,6 @@ const AlertModal = ({
           backgroundSize: '20px 20px, 15px 15px, 25px 25px'
         }} />
 
-        {/* Icon Circle - Fixed positioning */}
         <div style={{
           position: 'absolute',
           top: '30px',
@@ -159,12 +153,10 @@ const AlertModal = ({
           </div>
         </div>
 
-        {/* Content */}
         <div style={{
           padding: '50px 30px 30px 30px',
           textAlign: 'center'
         }}>
-          {/* Title */}
           <h3 style={{
             margin: '0 0 15px 0',
             color: config.textColor,
@@ -175,7 +167,6 @@ const AlertModal = ({
             {title}
           </h3>
 
-          {/* Message */}
           <div style={{
             marginBottom: '30px',
             color: config.textColor,
@@ -187,7 +178,6 @@ const AlertModal = ({
             {message}
           </div>
 
-          {/* Actions - Only show if showCancel is true */}
           {showCancel && (
             <div style={{
               display: 'flex',

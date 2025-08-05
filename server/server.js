@@ -17,7 +17,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 const beneficiaryRoutes = require('./routes/beneficiaries');
+const seedlingRecordRoutes = require('./routes/seedlingRecords');
+
 app.use('/api/beneficiaries', beneficiaryRoutes);
+app.use('/api/seedling-records', seedlingRecordRoutes);
 
 // Example route
 app.get('/', (req, res) => {

@@ -4,7 +4,7 @@ const Beneficiary = require('../models/Beneficiary');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads
+// Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -73,7 +73,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST create new beneficiary
+// POST create new beneficiary with image upload
 router.post('/', upload.single('picture'), async (req, res) => {
   try {
     const {
@@ -92,7 +92,7 @@ router.post('/', upload.single('picture'), async (req, res) => {
       age
     } = req.body;
 
-    // Check if beneficiary ID already exists
+    // Check for duplicate beneficiary ID
     const existingBeneficiary = await Beneficiary.findOne({ beneficiaryId });
     if (existingBeneficiary) {
       return res.status(400).json({
@@ -101,7 +101,7 @@ router.post('/', upload.single('picture'), async (req, res) => {
       });
     }
 
-    // Handle picture upload
+    // Handle image upload
     let pictureUrl = null;
     if (req.file) {
       pictureUrl = `/uploads/${req.file.filename}`;
@@ -141,7 +141,7 @@ router.post('/', upload.single('picture'), async (req, res) => {
   }
 });
 
-// PUT update beneficiary
+// PUT update beneficiary with optional image upload
 router.put('/:id', upload.single('picture'), async (req, res) => {
   try {
     const {
@@ -174,7 +174,7 @@ router.put('/:id', upload.single('picture'), async (req, res) => {
       age
     };
 
-    // Handle picture upload
+    // Handle image upload if provided
     if (req.file) {
       updateData.picture = `/uploads/${req.file.filename}`;
     }

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Beneficiary schema for coffee farm beneficiaries
 const beneficiarySchema = new mongoose.Schema({
   beneficiaryId: {
     type: String,
@@ -59,10 +60,10 @@ const beneficiarySchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    match: /^09\d{9}$/
+    match: /^09\d{9}$/ // Philippine mobile number format
   },
   picture: {
-    type: String, // URL or base64 string
+    type: String, // URL to uploaded image
     default: null
   },
   age: {
@@ -81,17 +82,16 @@ const beneficiarySchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Virtual for full name
+// Virtual properties for computed fields
 beneficiarySchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.middleName ? this.middleName + ' ' : ''}${this.lastName}`.trim();
 });
 
-// Virtual for full address
 beneficiarySchema.virtual('fullAddress').get(function() {
   return `${this.purok}, ${this.barangay}, ${this.municipality}, ${this.province}`;
 });
 
-// Method to calculate age
+// Instance method to calculate age from birth date
 beneficiarySchema.methods.calculateAge = function() {
   const today = new Date();
   const birthDate = new Date(this.birthDate);
@@ -103,7 +103,7 @@ beneficiarySchema.methods.calculateAge = function() {
   return age;
 };
 
-// Pre-save middleware to calculate age
+// Pre-save middleware to auto-calculate age
 beneficiarySchema.pre('save', function(next) {
   if (this.birthDate) {
     this.age = this.calculateAge();

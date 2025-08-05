@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
-import bgImage from '../assets/bg1.png';
-import DashboardScreen from './Admin_Dashboard';
+import React from 'react';
+import bgImage from '../../assets/images/bg1.png';
 
-const FrontPage = () => {
-  const [showDashboard, setShowDashboard] = useState(false);
-
-  if (showDashboard) {
-    return <DashboardScreen />;
-  }
+const PublicWebsite = ({ onNavigateToDashboard }) => {
 
   return (
     <div
@@ -16,13 +10,12 @@ const FrontPage = () => {
         minHeight: '100vh',
         width: '100vw',
         display: 'flex',
-        alignItems: 'center', // Center vertically
-        justifyContent: 'flex-start', // Align content to left
+        alignItems: 'center',
+        justifyContent: 'flex-start',
         overflow: 'hidden',
         padding: '2rem',
       }}
     >
-      {/* Background Image */}
       <div
         style={{
           position: 'absolute',
@@ -37,7 +30,6 @@ const FrontPage = () => {
           zIndex: 1,
         }}
       />
-      {/* Black Overlay */}
       <div
         style={{
           position: 'absolute',
@@ -49,7 +41,6 @@ const FrontPage = () => {
           zIndex: 2,
         }}
       />
-      {/* Content */}
       <div
         className="p-8 rounded-2xl shadow-lg max-w-2xl text-left mx-4"
         style={{
@@ -72,7 +63,7 @@ const FrontPage = () => {
           A Coffee Farm Monitoring Website for Taocanga, Manay, Davao Oriental.
         </p>
         <button
-          onClick={() => setShowDashboard(true)}
+          onClick={onNavigateToDashboard}
           style={{
             marginTop: '2rem',
             padding: '0.8em 2em',
@@ -94,4 +85,4 @@ const FrontPage = () => {
   );
 };
 
-export default FrontPage;
+export default PublicWebsite;

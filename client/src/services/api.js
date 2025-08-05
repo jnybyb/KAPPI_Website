@@ -77,6 +77,62 @@ export const beneficiaryAPI = {
   }
 };
 
+// API service for seedling records
+export const seedlingRecordAPI = {
+  // Get all seedling records
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records`);
+    return handleResponse(response);
+  },
+
+  // Get single seedling record by ID
+  getById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records/${id}`);
+    return handleResponse(response);
+  },
+
+  // Get seedling records by beneficiary ID
+  getByBeneficiaryId: async (beneficiaryId) => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records/beneficiary/${beneficiaryId}`);
+    return handleResponse(response);
+  },
+
+  // Create new seedling record
+  create: async (seedlingData) => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(seedlingData),
+    });
+    
+    return handleResponse(response);
+  },
+
+  // Update seedling record
+  update: async (id, seedlingData) => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(seedlingData),
+    });
+    
+    return handleResponse(response);
+  },
+
+  // Delete seedling record
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/seedling-records/${id}`, {
+      method: 'DELETE',
+    });
+    
+    return handleResponse(response);
+  }
+};
+
 // Error handling utility
 export const handleAPIError = (error) => {
   console.error('API Error:', error);

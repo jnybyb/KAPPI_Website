@@ -1,4 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
+import LoadingSpinner from '../../ui/LoadingSpinner';
 
 // Common styles
 const getCommonStyles = () => ({
@@ -152,8 +153,8 @@ const getInitialFormData = () => ({
   lastName: '',
   purok: '',
   barangay: '',
-  municipality: '',
-  province: '',
+  municipality: 'Manay',
+  province: 'Davao Oriental',
   gender: '',
   birthDate: '',
   maritalStatus: '',
@@ -178,6 +179,12 @@ const getDataOptions = () => ({
     'Surigao del Sur', 'Tarlac', 'Tawi-Tawi', 'Zambales', 'Zamboanga del Norte', 'Zamboanga del Sur',
     'Zamboanga Sibugay'
   ],
+  barangays: [
+    'Capasnan', 'Cayawan', 'Central', 'Concepcion', 'Del Pilar',
+    'Guza', 'Holy Cross', 'Lambog', 'Mabini', 'Manreza',
+    'New Taokanga', 'Old Macopa', 'Rizal', 'San Fermin', 'San Ignacio',
+    'San Isidro', 'Zaragosa'
+  ],
   genderOptions: [
     { value: 'Male', label: 'Male' },
     { value: 'Female', label: 'Female' }
@@ -191,18 +198,51 @@ const getDataOptions = () => ({
   ]
 });
 
-const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
+const BeneficiaryModal = ({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  beneficiary = null, // null for add mode, beneficiary object for edit mode
+  mode = 'add' // 'add' or 'edit'
+}) => {
   const [formData, setFormData] = useState(getInitialFormData());
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [beneficiaryId, setBeneficiaryId] = useState('');
 
   const styles = getCommonStyles();
   const options = getDataOptions();
+  const isEditMode = mode === 'edit' && beneficiary;
 
-  // Generate beneficiary ID on component mount
+  // Generate beneficiary ID on component mount (only for add mode)
   useEffect(() => {
-    generateBeneficiaryId();
-  }, []);
+    if (!isEditMode) {
+      generateBeneficiaryId();
+    }
+  }, [isEditMode]);
+
+  // Initialize form data when beneficiary prop changes (for edit mode)
+  useEffect(() => {
+    if (isEditMode && beneficiary) {
+      setFormData({
+        beneficiaryId: beneficiary.beneficiaryId || '',
+        firstName: beneficiary.firstName || '',
+        middleName: beneficiary.middleName || '',
+        lastName: beneficiary.lastName || '',
+        purok: beneficiary.purok || '',
+        barangay: beneficiary.barangay || '',
+        municipality: beneficiary.municipality || '',
+        province: beneficiary.province || '',
+        gender: beneficiary.gender || '',
+        birthDate: beneficiary.birthDate ? beneficiary.birthDate.split('T')[0] : '',
+        maritalStatus: beneficiary.maritalStatus || '',
+        cellphone: beneficiary.cellphone || '',
+        age: beneficiary.age || '',
+        picture: null
+      });
+      setErrors({});
+    }
+  }, [beneficiary, isEditMode]);
 
   // Generate beneficiary ID: two letters, two numbers (e.g., AB12)
   const generateBeneficiaryId = () => {
@@ -242,6 +282,15 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
         [name]: ''
       }));
     }
+
+    // Auto-calculate age when birth date changes
+    if (name === 'birthDate' && value) {
+      const age = calculateAge(value);
+      setFormData(prev => ({
+        ...prev,
+        age: age.toString()
+      }));
+    }
   };
 
   // Validate form fields
@@ -262,14 +311,6 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
     
     if (!formData.barangay.trim()) {
       newErrors.barangay = 'Barangay is required';
-    }
-    
-    if (!formData.municipality.trim()) {
-      newErrors.municipality = 'Municipality is required';
-    }
-    
-    if (!formData.province.trim()) {
-      newErrors.province = 'Province is required';
     }
     
     if (!formData.gender) {
@@ -313,35 +354,45 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   const resetForm = () => {
     setFormData(getInitialFormData());
     setErrors({});
-    generateBeneficiaryId();
+    if (!isEditMode) {
+      generateBeneficiaryId();
+    }
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
-      const age = calculateAge(formData.birthDate);
+      setIsSubmitting(true);
       
-      const newBeneficiary = {
-        beneficiaryId,
-        firstName: formData.firstName,
-        middleName: formData.middleName,
-        lastName: formData.lastName,
-        purok: formData.purok,
-        barangay: formData.barangay,
-        municipality: formData.municipality,
-        province: formData.province,
-        gender: formData.gender,
-        birthDate: formData.birthDate,
-        maritalStatus: formData.maritalStatus,
-        cellphone: formData.cellphone,
-        age: age,
-        picture: formData.picture
-      };
-      
-      onSubmit(newBeneficiary);
-      resetForm();
+      try {
+        const age = calculateAge(formData.birthDate);
+        
+        const beneficiaryData = {
+          beneficiaryId: isEditMode ? formData.beneficiaryId : beneficiaryId,
+          firstName: formData.firstName,
+          middleName: formData.middleName,
+          lastName: formData.lastName,
+          purok: formData.purok,
+          barangay: formData.barangay,
+          municipality: formData.municipality,
+          province: formData.province,
+          gender: formData.gender,
+          birthDate: formData.birthDate,
+          maritalStatus: formData.maritalStatus,
+          cellphone: formData.cellphone,
+          age: age,
+          picture: formData.picture
+        };
+        
+        await onSubmit(beneficiaryData);
+        resetForm();
+      } catch (error) {
+        console.error('Error saving beneficiary:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -393,7 +444,9 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
           top: 0,
           zIndex: 10
         }}>
-          <h2 style={{ color: 'var(--black)', margin: 0, fontSize: '1rem', fontWeight: '600' }}>Add New Beneficiary</h2>
+          <h2 style={{ color: 'var(--black)', margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+            {isEditMode ? 'Edit Beneficiary' : 'Add New Beneficiary'}
+          </h2>
           <button
             onClick={handleClose}
             style={{
@@ -429,6 +482,17 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
               {/* Name Fields */}
               <div style={{ width: '60%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {isEditMode && (
+                  <InputField
+                    name="beneficiaryId"
+                    label="Beneficiary ID"
+                    value={formData.beneficiaryId}
+                    onChange={handleInputChange}
+                    placeholder="Enter beneficiary ID"
+                    required
+                    error={errors.beneficiaryId}
+                  />
+                )}
                 <InputField
                   name="firstName"
                   label="First Name"
@@ -457,100 +521,102 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 />
               </div>
 
-                             {/* Profile Picture Container */}
-               <div style={{
-                 minWidth: '200px',
-                 maxWidth: '200px',
-                 display: 'flex',
-                 flexDirection: 'column',
-                 alignItems: 'center',
-                 gap: '.5rem',
-                 marginTop: '1rem',
-                 padding: '.6rem',
-                 backgroundColor: '#f8f9fa',
-                 borderRadius: '8px',
-                 border: '1px solid #e9ecef',
-                 boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-               }}>
-                 <div style={{
-                   width: '70px',
-                   height: '70px',
-                   borderRadius: '50%',
-                   backgroundColor: 'white',
-                   display: 'flex',
-                   alignItems: 'center',
-                   justifyContent: 'center',
-                   fontSize: '40px',
-                   border: '2px dashed #ced4da',
-                   overflow: 'hidden',
-                   transition: 'border-color 0.2s ease'
-                 }}>
-                   {formData.picture ? (
-                     <img
-                       src={URL.createObjectURL(formData.picture)}
-                       alt="Preview"
-                       style={{
-                         width: '100%',
-                         height: '100%',
-                         objectFit: 'cover',
-                         borderRadius: '50%'
-                       }}
-                     />
-                   ) : (
-                     <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
-                       <circle cx="12" cy="8" r="4"/>
-                       <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
-                     </svg>
-                   )}
-                 </div>
-                 
-                                   <div style={{ width: '100%', textAlign: 'center' }}>
-                    <input
-                      type="file"
-                      name="picture"
-                      accept="image/*"
-                      onChange={handleInputChange}
+              {/* Profile Picture Container */}
+              <div style={{
+                minWidth: '200px',
+                maxWidth: '200px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '.5rem',
+                marginTop: '1rem',
+                padding: '.6rem',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+              }}>
+                <div style={{
+                  width: '70px',
+                  height: '70px',
+                  borderRadius: '50%',
+                  backgroundColor: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '40px',
+                  border: '2px dashed #ced4da',
+                  overflow: 'hidden',
+                  transition: 'border-color 0.2s ease'
+                }}>
+                  {formData.picture ? (
+                    <img
+                      src={URL.createObjectURL(formData.picture)}
+                      alt="Preview"
                       style={{
-                        width: '70%',
-                        display: 'block',
-                        margin: '0 auto 0.2rem auto',
-                        border: '1px solid var(--gray)',
-                        borderRadius: '4px',
-                        fontSize: '8px',
-                        background: 'white',
-                        cursor: 'pointer',
-                        boxSizing: 'border-box',
-                        textAlign: 'center',
-                        padding: '4px'
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderRadius: '50%'
                       }}
                     />
-                    <p style={{ fontSize: '8px', color: '#6c757d', marginBottom: '.5rem' }}>
-                      Upload profile picture
-                    </p>
+                  ) : (
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
+                    </svg>
+                  )}
+                </div>
+                
+                <div style={{ width: '100%', textAlign: 'center' }}>
+                  <input
+                    type="file"
+                    name="picture"
+                    accept="image/*"
+                    onChange={handleInputChange}
+                    style={{
+                      width: '70%',
+                      display: 'block',
+                      margin: '0 auto 0.2rem auto',
+                      border: '1px solid var(--gray)',
+                      borderRadius: '4px',
+                      fontSize: '8px',
+                      background: 'white',
+                      cursor: 'pointer',
+                      boxSizing: 'border-box',
+                      textAlign: 'center',
+                      padding: '4px'
+                    }}
+                  />
+                  <p style={{ fontSize: '8px', color: '#6c757d', marginBottom: '.5rem' }}>
+                    {isEditMode ? 'Upload new picture' : 'Upload profile picture'}
+                  </p>
+                </div>
+                
+                <div style={{
+                  padding: '0.75rem',
+                  backgroundColor: 'white',
+                  borderRadius: '6px',
+                  textAlign: 'center',
+                  fontWeight: '500',
+                  fontSize: '11px',
+                  color: 'var(--black)',
+                  width: '100%',
+                  border: '1px solid #e9ecef'
+                }}>
+                  <div style={{ marginBottom: '0.25rem', fontSize: '10px' }}>
+                    {isEditMode ? 'Current ID' : 'Beneficiary ID'}
                   </div>
-                 
-                 <div style={{
-                   padding: '0.75rem',
-                   backgroundColor: 'white',
-                   borderRadius: '6px',
-                   textAlign: 'center',
-                   fontWeight: '500',
-                   fontSize: '11px',
-                   color: 'var(--black)',
-                   width: '100%',
-                   border: '1px solid #e9ecef'
-                 }}>
-                   <div style={{ marginBottom: '0.25rem', fontSize: '10px' }}>Beneficiary ID</div>
-                   <span style={{ 
-                     fontWeight: '700', 
-                     color: 'var(--emerald-green)', 
-                     letterSpacing: '1px', 
-                     fontSize: '16px' 
-                   }}>
-                     {beneficiaryId}
-                   </span>
-                 </div>
-               </div>
+                  <span style={{ 
+                    fontWeight: '700', 
+                    color: 'var(--emerald-green)', 
+                    letterSpacing: '1px', 
+                    fontSize: '16px' 
+                  }}>
+                    {isEditMode ? formData.beneficiaryId : beneficiaryId}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -561,6 +627,55 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             </h3>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={styles.label}>
+                  Province *
+                </label>
+                <input
+                  type="text"
+                  name="province"
+                  value={formData.province}
+                  onChange={handleInputChange}
+                  style={{
+                    ...styles.input,
+                    border: `1px solid ${errors.province ? 'var(--red)' : 'var(--gray)'}`,
+                    backgroundColor: 'white',
+                    color: 'var(--black)'
+                  }}
+                />
+                {errors.province && (
+                  <span style={styles.error}>{errors.province}</span>
+                )}
+              </div>
+              <div>
+                <label style={styles.label}>
+                  Municipality *
+                </label>
+                <input
+                  type="text"
+                  name="municipality"
+                  value={formData.municipality}
+                  onChange={handleInputChange}
+                  style={{
+                    ...styles.input,
+                    border: `1px solid ${errors.municipality ? 'var(--red)' : 'var(--gray)'}`,
+                    backgroundColor: 'white',
+                    color: 'var(--black)'
+                  }}
+                />
+                {errors.municipality && (
+                  <span style={styles.error}>{errors.municipality}</span>
+                )}
+              </div>
+              <SelectField
+                name="barangay"
+                label="Barangay"
+                value={formData.barangay}
+                onChange={handleInputChange}
+                options={options.barangays}
+                required
+                error={errors.barangay}
+              />
               <InputField
                 name="purok"
                 label="Purok"
@@ -569,33 +684,6 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
                 placeholder="Enter purok"
                 required
                 error={errors.purok}
-              />
-              <InputField
-                name="barangay"
-                label="Barangay"
-                value={formData.barangay}
-                onChange={handleInputChange}
-                placeholder="Enter barangay"
-                required
-                error={errors.barangay}
-              />
-              <InputField
-                name="municipality"
-                label="Municipality"
-                value={formData.municipality}
-                onChange={handleInputChange}
-                placeholder="Enter municipality"
-                required
-                error={errors.municipality}
-              />
-              <SelectField
-                name="province"
-                label="Province"
-                value={formData.province}
-                onChange={handleInputChange}
-                options={options.provinces}
-                required
-                error={errors.province}
               />
             </div>
           </div>
@@ -710,16 +798,33 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
             </button>
             <button
               type="submit"
+              disabled={isSubmitting}
               style={{
                 ...styles.button,
                 border: 'none',
-                backgroundColor: 'var(--dark-green)',
-                color: 'white'
+                backgroundColor: isSubmitting ? '#6c757d' : 'var(--dark-green)',
+                color: 'white',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--emerald-green)'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--dark-green)'}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = 'var(--emerald-green)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSubmitting) {
+                  e.target.style.backgroundColor = 'var(--dark-green)';
+                }
+              }}
             >
-              Add Beneficiary
+              {isSubmitting ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <LoadingSpinner color="white" />
+                  {isEditMode ? 'Updating...' : 'Adding...'}
+                </div>
+              ) : (
+                isEditMode ? 'Update Beneficiary' : 'Add Beneficiary'
+              )}
             </button>
           </div>
         </form>
@@ -728,7 +833,7 @@ const AddBeneficiaryModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddBeneficiaryModal;
+export default BeneficiaryModal;
 
 <style>
 {`
@@ -781,4 +886,3 @@ select.custom-select-dropdown {
 }
 `}
 </style> 
-

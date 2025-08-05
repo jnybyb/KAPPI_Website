@@ -12,7 +12,6 @@ const Button = ({
   className = '',
   ...props
 }) => {
-  // Button type configurations
   const buttonTypes = {
     primary: {
       backgroundColor: '#2c5530',
@@ -80,7 +79,6 @@ const Button = ({
     }
   };
 
-  // Button size configurations
   const buttonSizes = {
     small: {
       padding: '4px 8px',
